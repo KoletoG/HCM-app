@@ -1,4 +1,5 @@
 ﻿using System;
+using HCM_app.Models.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace HCM_app.Data
@@ -10,5 +11,6 @@ namespace HCM_app.Data
         { 
 
         }
+        public DbSet<UserDataModel> Users { get; set; }
     }
 }
