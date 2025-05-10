@@ -1,11 +1,12 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
 using SharedModels;
-namespace HCM_app.Data
+ 
+namespace ApplicationDbContextShared
 {
     public class ApplicationDbContext : DbContext
     {
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
@@ -83,6 +84,5 @@ namespace HCM_app.Data
                 }
             );
         }
-
     }
 }

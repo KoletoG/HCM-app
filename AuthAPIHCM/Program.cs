@@ -1,5 +1,4 @@
-
-using AuthAPIHCM.Data;
+using ApplicationDbContextShared;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthAPIHCM

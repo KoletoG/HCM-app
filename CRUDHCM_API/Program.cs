@@ -1,5 +1,4 @@
-
-using CRUDHCM_API.Data;
+using ApplicationDbContextShared;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUDHCM_API

@@ -1,4 +1,4 @@
-using HCM_app.Data;
+using ApplicationDbContextShared;
 using Microsoft.EntityFrameworkCore;
 
 namespace HCM_app

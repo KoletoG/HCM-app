@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics;
-using HCM_app.Data;
-using HCM_app.Migrations;
 using Microsoft.AspNetCore.Mvc;
 using SharedModels;
 

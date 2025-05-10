@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using CRUDHCM_API.Data;
+using ApplicationDbContextShared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedModels;
@@ -45,12 +45,12 @@ namespace CRUDHCM_API.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-        // PUT api/<CRUDController>/5
+
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
-        }
 
+        }
         [HttpDelete("user/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
