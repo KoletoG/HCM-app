@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthAPIHCM", "AuthAPIHCM\Au
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRUDHCM_API", "CRUDHCM_API\CRUDHCM_API.csproj", "{8A841FC9-85DB-411A-B965-CEE12CFFF468}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{A1F50275-1B08-48C2-8567-2F018673FA9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8A841FC9-85DB-411A-B965-CEE12CFFF468}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A841FC9-85DB-411A-B965-CEE12CFFF468}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A841FC9-85DB-411A-B965-CEE12CFFF468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
