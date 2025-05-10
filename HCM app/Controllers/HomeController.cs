@@ -20,10 +20,6 @@ namespace HCM_app.Controllers
         {
             return View();
         }
-        public IActionResult GetUsers()
-        {
-            return View("Index");
-        }
 
         public IActionResult Privacy()
         {
