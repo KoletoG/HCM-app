@@ -17,7 +17,6 @@ namespace CRUDHCM_API.Controllers
         {
             _context = context;
         }
-        // GET: api/<CRUDController>
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -25,7 +24,6 @@ namespace CRUDHCM_API.Controllers
             return Ok(users);
         }
 
-        // GET api/<CRUDController>/5
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -40,7 +38,6 @@ namespace CRUDHCM_API.Controllers
             }
         }
 
-        // POST api/<CRUDController>
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserDataModel user)
         {
@@ -54,10 +51,12 @@ namespace CRUDHCM_API.Controllers
         {
         }
 
-        // DELETE api/<CRUDController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("user")]
+        public async Task<IActionResult> Delete([FromBody] UserDataModel user)
         {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
