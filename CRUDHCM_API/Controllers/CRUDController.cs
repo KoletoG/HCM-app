@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Azure;
 using BCrypt.Net;
 using CRUDHCM_API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SharedModels;
-
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.JsonPatch;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -25,7 +27,7 @@ namespace CRUDHCM_API.Controllers
             return Ok(users);
         }
 
-        [HttpGet("user/{id}")]
+        [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
@@ -39,15 +41,29 @@ namespace CRUDHCM_API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("users")]
         public async Task<IActionResult> AddUser([FromBody] UserDataModel user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpPatch]
+        public async Task<IActionResult> PatchUser(string id, [FromBody] JsonPatchDocument<UserDataModel> patchDoc)
+        {
 
-        [HttpPut("updateUser/{id}")]
+            var userOld = await _context.Users.FirstAsync(x => x.Id == id);
+            patchDoc.ApplyTo(userOld); 
+            if (patchDoc.Operations.Any(op => op.path == "/password"))
+            {
+                userOld.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userOld.Password);
+            }
+            _context.Update(userOld);
+            await _context.SaveChangesAsync();
+            return Ok(userOld);
+        }
+
+        [HttpPut("users/{id}")]
         public async Task<IActionResult> UpdateUser(string id,[FromBody] UserDataModel user)
         {
             if (user.Id != id)
@@ -70,7 +86,7 @@ namespace CRUDHCM_API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [HttpDelete("user/{id}")]
+        [HttpDelete("users/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             await _context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
