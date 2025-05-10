@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using BCrypt.Net;
 using CRUDHCM_API.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,10 +47,28 @@ namespace CRUDHCM_API.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("updateUser/{id}")]
+        public async Task<IActionResult> UpdateUser(string id,[FromBody] UserDataModel user)
         {
-
+            if (user.Id != id)
+            {
+                return BadRequest("User Id doesn't match the id from the URL.");
+            }
+            var userOld = await _context.Users.FirstAsync(x => x.Id == id);
+            userOld.FirstName = user.FirstName;
+            userOld.LastName = user.LastName;
+            userOld.Email = user.Email;
+            userOld.Role = user.Role;
+            userOld.Department = user.Department;
+            userOld.JobTitle = user.JobTitle;
+            userOld.Salary = user.Salary;
+            if (userOld.Password != user.Password)
+            {
+                userOld.Password = user.Password;
+                userOld.PasswordHash=BCrypt.Net.BCrypt.HashPassword(user.Password);
+            }
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
         [HttpDelete("user/{id}")]
         public async Task<IActionResult> Delete(string id)
