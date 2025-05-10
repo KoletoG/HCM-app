@@ -20,7 +20,7 @@ namespace HCM_app.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var users = await _clientCRUD.GetAsync("api/CRUD");
+            var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD");
             return View();
         }
 

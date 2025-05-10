@@ -19,9 +19,10 @@ namespace CRUDHCM_API.Controllers
         }
         // GET: api/<CRUDController>
         [HttpGet]
-        public async Task<List<UserDataModel>> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
         }
 
         // GET api/<CRUDController>/5
