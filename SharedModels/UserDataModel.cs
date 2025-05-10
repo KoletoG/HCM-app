@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
 namespace SharedModels
@@ -19,6 +20,7 @@ namespace SharedModels
         public double Salary { get; set; }
         public string Department { get; set; }
         [Required]
+        [NotMapped]
         public string Password { get; set; }
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }

@@ -42,6 +42,13 @@ namespace HCM_app.Controllers
             {
                 return View();
             }
+            UserDataModel user = new UserDataModel();
+            user.JobTitle=registerModel.JobTitle;
+            user.Salary=registerModel.Salary;
+            user.Email=registerModel.Email;
+            user.FirstName=registerModel.FirstName;
+            user.LastName=registerModel.LastName;
+            user.Role = UserRole.Employee;
             return View();
         }
 
