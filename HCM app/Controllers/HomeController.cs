@@ -21,7 +21,7 @@ namespace HCM_app.Controllers
         public async Task<IActionResult> Index()
         {
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
-            return View();
+            return View(users);
         }
 
         public IActionResult Privacy()

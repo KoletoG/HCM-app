@@ -51,13 +51,6 @@ namespace CRUDHCM_API.Controllers
         {
         }
 
-        [HttpDelete("user")]
-        public async Task<IActionResult> Delete([FromBody] UserDataModel user)
-        {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
         [HttpDelete("user/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
