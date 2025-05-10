@@ -8,7 +8,7 @@ using SharedModels;
 
 namespace CRUDHCM_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/CRUD")]
     [ApiController]
     public class CRUDController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace CRUDHCM_API.Controllers
         }
         // GET: api/<CRUDController>
         [HttpGet]
-        public async Task<IEnumerable<UserDataModel>> GetAllUsers()
+        public async Task<List<UserDataModel>> GetAllUsers()
         {
             return await _context.Users.ToListAsync();
         }

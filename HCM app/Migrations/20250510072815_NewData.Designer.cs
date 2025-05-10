@@ -3,6 +3,7 @@ using HCM_app.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HCM_app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250510072815_NewData")]
+    partial class NewData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,66 +70,66 @@ namespace HCM_app.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = "c371a2bd-2054-4d70-ae74-220ab964db23",
                             Department = "Human Resources",
                             Email = "john.doe@company.com",
                             FirstName = "John",
                             JobTitle = "HR Manager",
                             LastName = "Doe",
                             Password = "john123",
-                            PasswordHash = "$2a$11$TGF/8C6lvCd2NwvIzyy7MO5zEVU0HbFi6Lcszz3vJ5Jb7IYgU4WQ6",
+                            PasswordHash = "$2a$11$CAsvsc6Wb/zLl9kVw56PXuDHkqnuYL0DuGXg6bOfxq4bCVTSHwdZy",
                             Role = 2,
                             Salary = 60000.0
                         },
                         new
                         {
-                            Id = "2",
+                            Id = "67766b45-df0b-47df-aa34-ccd42f41a622",
                             Department = "IT",
                             Email = "alice.smith@company.com",
                             FirstName = "Alice",
                             JobTitle = "Software Developer",
                             LastName = "Smith",
                             Password = "alice123",
-                            PasswordHash = "$2a$11$6gHDwIT5oF7kPv/WsZ5xSuJZgYiy0qqosBHT5hyvTjxESfCLOEBoK",
+                            PasswordHash = "$2a$11$5IkuPwvTCoV1E0f07isFT.sc5ODdMHBEkZ3LAdkp9p8Ht9Ia5TbhO",
                             Role = 0,
                             Salary = 55000.0
                         },
                         new
                         {
-                            Id = "3",
+                            Id = "3b15153b-9d74-48bd-951f-a9ccdb60be55",
                             Department = "IT",
                             Email = "bob.brown@company.com",
                             FirstName = "Bob",
                             JobTitle = "IT Manager",
                             LastName = "Brown",
                             Password = "bob123",
-                            PasswordHash = "$2a$11$WkN0zZ6xNmBxLKNZKb7Lz.CDuvOl/aI6uR5Y31ECR6sIzLrz0xuU2",
+                            PasswordHash = "$2a$11$0oeRcWuGYln89tEN0ZGRL.yTTSXHpsE893hkQdBC0alOcct8CIGlS",
                             Role = 1,
                             Salary = 70000.0
                         },
                         new
                         {
-                            Id = "4",
+                            Id = "95ba2835-f31f-4f1b-92a5-c2c994834555",
                             Department = "Analytics",
                             Email = "eve.white@company.com",
                             FirstName = "Eve",
                             JobTitle = "Data Analyst",
                             LastName = "White",
                             Password = "eve123",
-                            PasswordHash = "$2a$11$uFxI9zGB3EPPylxJzDJ01O9mxvhvn4tNzXn2uFub02YjKl3K5q6a6",
+                            PasswordHash = "$2a$11$VvcM/raekBkc706DIzVKEOeiWwf3P7UzVtpyPjmoFd3PGZGNfNyga",
                             Role = 0,
                             Salary = 50000.0
                         },
                         new
                         {
-                            Id = "5",
+                            Id = "aff067fa-1533-4bf0-9d66-9c2a5ec68e03",
                             Department = "Finance",
                             Email = "charlie.black@company.com",
                             FirstName = "Charlie",
                             JobTitle = "Finance Manager",
                             LastName = "Black",
                             Password = "charlie123",
-                            PasswordHash = "$2a$11$ZOfVLQjZas3zF7TFoTeZp.7V/qew5cqvPcNCQs5tQZ0Txlri3F5FS",
+                            PasswordHash = "$2a$11$8JL/YIJPTM2Y5zu8dBQtY.0BaBm5fCVlXCVWf3atMHfHU2BACPy.i",
                             Role = 1,
                             Salary = 65000.0
                         });

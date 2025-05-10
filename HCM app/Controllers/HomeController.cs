@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
+using HCM_app.Data;
 using HCM_app.Migrations;
 using Microsoft.AspNetCore.Mvc;
+using SharedModels;
 
 namespace HCM_app.Controllers
 {
@@ -15,9 +18,9 @@ namespace HCM_app.Controllers
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var users = await _clientCRUD.GetAsync("api/CRUD");
             return View();
         }
 
