@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ApplicationDbContextShared;
 using SharedModels;
+using AuthAPIHCM.Data;
 
 namespace AuthAPIHCM.Controllers
 {
