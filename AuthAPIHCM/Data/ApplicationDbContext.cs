@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SharedModels;
 
 namespace AuthAPIHCM.Data
 {
@@ -8,5 +9,6 @@ namespace AuthAPIHCM.Data
         {
 
         }
+        public DbSet<UserDataModel> Users { get; set; }
     }
 }

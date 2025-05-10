@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SharedModels;
 
 namespace CRUDHCM_API.Data
 {
@@ -8,5 +9,6 @@ namespace CRUDHCM_API.Data
         {
 
         }
+        public DbSet<UserDataModel> Users { get; set; }
     }
 }
