@@ -33,6 +33,8 @@ namespace AuthAPIHCM
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
             };
         });
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();

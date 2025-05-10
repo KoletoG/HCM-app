@@ -12,7 +12,7 @@ using AuthAPIHCM.Interfaces;
 
 namespace AuthAPIHCM.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace AuthAPIHCM.Controllers
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == login.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.PasswordHash, user.PasswordHash))
+            if (user == default || !BCrypt.Net.BCrypt.Verify(login.PasswordHash, user.PasswordHash))
             {
                 return Unauthorized("Invalid credentials");
             }

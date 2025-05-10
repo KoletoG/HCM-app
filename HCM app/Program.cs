@@ -1,5 +1,8 @@
+using System.Text;
 using HCM_app.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HCM_app
 {
@@ -20,7 +23,22 @@ namespace HCM_app
             builder.Services.AddHttpClient("CRUDAPI", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:7261/");
-            });
+            }); builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "your_issuer",
+                ValidAudience = "your_audience",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
+            };
+        });
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
