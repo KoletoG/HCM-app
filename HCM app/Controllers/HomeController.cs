@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Text.Json;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +38,7 @@ namespace HCM_app.Controllers
         [Route("register/errors")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel registerModel)
+        public async Task<IActionResult> Register(RegisterViewModel registerModel)
         {
             if (!ModelState.IsValid)
             {
@@ -48,7 +50,11 @@ namespace HCM_app.Controllers
             user.Email=registerModel.Email;
             user.FirstName=registerModel.FirstName;
             user.LastName=registerModel.LastName;
+            user.Password=registerModel.Password;
+            user.Id = Guid.NewGuid().ToString();
+            user.PasswordHash = "234";
             user.Role = UserRole.Employee;
+            var result = await _clientAuth.PostAsJsonAsync("api/Auth/register", user);
             return View();
         }
 

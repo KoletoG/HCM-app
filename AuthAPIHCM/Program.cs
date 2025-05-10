@@ -32,6 +32,15 @@ namespace AuthAPIHCM
                 ValidAudience = "your_audience",
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
             };
+        }); 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
         });
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();

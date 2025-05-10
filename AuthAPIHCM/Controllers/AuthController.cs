@@ -12,7 +12,7 @@ using AuthAPIHCM.Interfaces;
 
 namespace AuthAPIHCM.Controllers
 {
-    [Route("api/auth")]
+    [Route("api/Auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -32,6 +32,8 @@ namespace AuthAPIHCM.Controllers
                 return BadRequest("Password cannot be empty.");
             }
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            user.Id = Guid.NewGuid().ToString();
+            user.Role = UserRole.Employee;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Register), new { id = user.Id }, user);

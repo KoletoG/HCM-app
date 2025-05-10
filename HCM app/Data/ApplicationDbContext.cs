@@ -26,7 +26,7 @@ namespace HCM_app.Data
                     Salary = 60000,
                     Department = "Human Resources",
                     Password = "john123",
-                    PasswordHash = "$2a$11$TGF/8C6lvCd2NwvIzyy7MO5zEVU0HbFi6Lcszz3vJ5Jb7IYgU4WQ6", // Pre-hashed
+                    PasswordHash = "$2a$11$TGF/8C6lvCd2NwvIzyy7MO5zEVU0HbFi6Lcszz3vJ5Jb7IYgU4WQ6",
                     Role = UserRole.HrAdmin
                 },
                 new UserDataModel
