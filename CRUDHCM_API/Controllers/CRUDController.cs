@@ -58,5 +58,11 @@ namespace CRUDHCM_API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+        [HttpDelete("user/{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
+            return NoContent();
+        }
     }
 }
