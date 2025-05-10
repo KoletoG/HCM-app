@@ -1,0 +1,15 @@
+﻿@using HCM_app.ViewModels
+@model RegisterViewModel
+<h1>REGISTER</h1>
+<form asp-action="Register" method="post" asp-controller="Home">
+	@Html.AntiForgeryToken()
+	<input name="FirstName" type="text" placeholder="First name..."/>
+	<span asp-validation-for="FirstName" class="text-danger"></span>
+	<input name="LastName" type="text" placeholder="Last name..." />
+	<input name="Email" type="email" placeholder="Email..." />
+	<input name="JobTitle" type="text" placeholder="Your job..." />
+	<input name="Salary" type="number" placeholder="Salary..." />
+	<input name="Department" type="text" placeholder="Department..." />
+	<input name="Password" type="password" placeholder="Password..." />
+	<button type="submit">Register</button>
+</form>

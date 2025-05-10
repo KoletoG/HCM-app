@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using HCM_app.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedModels;
 
@@ -21,13 +23,25 @@ namespace HCM_app.Controllers
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
             return View(users);
         }
-        public async Task<IActionResult> Register()
-        {
-            return RedirectToAction("Index");
-        }
 
         public IActionResult Privacy()
         {
+            return View();
+        }
+        [Route("register")]
+        public IActionResult RegisterMain()
+        {
+            return View("Register");
+        }
+        [Route("register/errors")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(RegisterViewModel registerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             return View();
         }
 

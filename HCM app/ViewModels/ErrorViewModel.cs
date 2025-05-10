@@ -1,4 +1,4 @@
-﻿namespace HCM_app
+﻿namespace HCM_app.ViewModels
 {
     public class ErrorViewModel
     {
