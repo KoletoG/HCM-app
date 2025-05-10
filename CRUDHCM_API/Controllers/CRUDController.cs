@@ -18,7 +18,7 @@ namespace CRUDHCM_API.Controllers
             _context = context;
         }
         // GET: api/<CRUDController>
-        [HttpGet]
+        [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.ToListAsync();
@@ -26,7 +26,7 @@ namespace CRUDHCM_API.Controllers
         }
 
         // GET api/<CRUDController>/5
-        [HttpGet("{id}")]
+        [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
