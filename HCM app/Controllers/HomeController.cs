@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using HCM_app.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HCM_app.Controllers
