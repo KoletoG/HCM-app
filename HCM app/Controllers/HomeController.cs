@@ -33,6 +33,7 @@ namespace HCM_app.Controllers
             var user = await _clientCRUD.GetAsync($"api/CRUD/users/{currentEmail}");
             return View();
         }
+        [Authorize(Roles = "HrAdmin")]
         public async Task<IActionResult> AddUserMain()
         {
             return View();

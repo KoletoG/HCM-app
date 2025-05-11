@@ -45,7 +45,7 @@ namespace HCM_app
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
             builder.Services.AddAuthentication();
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options=>options.AddPolicy("HrAdminPolicy",x=>x.RequireClaim("HrAdmin")));
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

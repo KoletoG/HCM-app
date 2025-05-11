@@ -29,7 +29,6 @@ namespace AuthAPIHCM.Controllers
         }
 
         [HttpPost("login")]
-        [Authorize(Roles ="HrAdmin")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginModel.Email);
