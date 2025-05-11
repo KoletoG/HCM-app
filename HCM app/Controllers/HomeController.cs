@@ -63,12 +63,9 @@ namespace HCM_app.Controllers
             {
                 var token = await result.Content.ReadAsStringAsync();
                 HttpContext.Session.SetString("jwt", token);
-                JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-                var resul1 = jwtSecurityTokenHandler.ReadJwtToken(token);
-                var resulttt = resul1.Subject;
                 return RedirectToAction("Index", "Home");
             }
-            return View();
+            return View(loginModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

@@ -34,8 +34,17 @@ namespace AuthAPIHCM.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginModel.Email);
-            if (user == default)
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest("There was a problem with the input.");
+            }
+            var result = await _clientCRUD.GetAsync($"api/CRUD/users/email-{loginModel.Email}");
+            var user = new UserDataModel();
+            if (result.IsSuccessStatusCode)
+            {
+                user = await result.Content.ReadFromJsonAsync<UserDataModel>();
+            }
+            else
             {
                 return NotFound("A user with this email doesn't exist.");
             }
