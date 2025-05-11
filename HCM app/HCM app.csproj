@@ -22,4 +22,8 @@
     <ProjectReference Include="..\SharedModels\SharedModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+  </ItemGroup>
+
 </Project>

@@ -57,7 +57,7 @@ namespace AuthAPIHCM
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseSession();
 
             app.MapControllers();
 

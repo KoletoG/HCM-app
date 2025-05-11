@@ -37,6 +37,13 @@ namespace HCM_app
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
             };
         });
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
             var app = builder.Build();

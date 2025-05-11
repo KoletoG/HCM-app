@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharedModels;
 
@@ -37,6 +38,11 @@ namespace HCM_app.Controllers
         public async Task<IActionResult> Login(LoginViewModel loginModel)
         {
             var result = await _clientAuth.PostAsJsonAsync<LoginViewModel>("api/auth/login",loginModel);
+            if (result.IsSuccessStatusCode)
+            {
+                var token = await result.Content.ReadAsStringAsync();
+                HttpContext.Session.SetString("jwt", token);
+            }
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
