@@ -83,7 +83,7 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("LoginMain", "Home");
             }
-            return View();
+            return Problem();
         }
         [HttpGet]
         public IActionResult Register()

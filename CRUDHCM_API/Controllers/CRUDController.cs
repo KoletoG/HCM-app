@@ -70,7 +70,7 @@ namespace CRUDHCM_API.Controllers
             }
             catch (DbException)
             {
-                return Problem("Problem occured with saving to database");
+                return Problem("Problem occured with saving data to database");
             }
         }
         [HttpPatch]

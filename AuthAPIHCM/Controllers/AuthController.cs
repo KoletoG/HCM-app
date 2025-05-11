@@ -28,7 +28,7 @@ namespace AuthAPIHCM.Controllers
             _context = context;
             _authService = authService;
             _clientCRUD = new HttpClient();
-            _clientCRUD.BaseAddress= new Uri("https://localhost:7261/");
+            _clientCRUD.BaseAddress = new Uri("https://localhost:7261/");
         }
 
         [HttpPost("login")]
@@ -39,12 +39,9 @@ namespace AuthAPIHCM.Controllers
             {
                 return NotFound("A user with this email doesn't exist.");
             }
-            if(loginModel.Email!= "john.doe@company.com")
+            if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.PasswordHash))
             {
-                if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.PasswordHash))
-                {
-                    return Unauthorized("Invalid credentials");
-                }
+                return Unauthorized("Invalid credentials");
             }
             var token = _authService.GenerateJwtToken(user);
             return Ok(token);
@@ -52,24 +49,23 @@ namespace AuthAPIHCM.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel registerModel)
         {
-            UserDataModel user = new UserDataModel();
-            user.Id = Guid.NewGuid().ToString();
-            user.Email = registerModel.Email;
-            user.Salary = registerModel.Salary;
-            if (registerModel.Email != "admin@email.com")
+            if (!ModelState.IsValid)
             {
-                user.Role = "Employee";
+                return BadRequest(registerModel);
             }
-            else
+            UserDataModel user = new UserDataModel() 
             {
-                user.Role = "HrAdmin";
-            }
-            user.LastName = registerModel.LastName;
-            user.FirstName = registerModel.FirstName;
-            user.Department = registerModel.Department;
-            user.JobTitle = registerModel.JobTitle;
-            user.Password=registerModel.Password;
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerModel.Password);
+                Id= Guid.NewGuid().ToString(),
+                Email= registerModel.Email,
+                Salary=registerModel.Salary,
+                Department=registerModel.Department,
+                FirstName=registerModel.FirstName,
+                LastName=registerModel.LastName,
+                JobTitle=registerModel.JobTitle,
+                Password=registerModel.Password,
+                PasswordHash= BCrypt.Net.BCrypt.HashPassword(registerModel.Password),
+                Role=registerModel.Email=="admin@email.com" ? "HrAdmin" : "Employee"
+            };
             var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
             if (result.IsSuccessStatusCode)
             {
