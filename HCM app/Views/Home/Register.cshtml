@@ -3,4 +3,19 @@
 
 <form asp-action="Register" asp-controller="Home" method="post">
 	@Html.AntiForgeryToken()
+	<input asp-for="FirstName" />
+	<span asp-validation-for="FirstName"></span>
+	<input asp-for="LastName" />
+	<span asp-validation-for="LastName"></span>
+	<input asp-for="Email" />
+	<span asp-validation-for="Email"></span>
+	<input asp-for="Department" />
+	<span asp-validation-for="Department"></span>
+	<input asp-for="Salary" />
+	<span asp-validation-for="Salary"></span>
+	<input asp-for="JobTitle" />
+	<span asp-validation-for="JobTitle"></span>
+	<input asp-for="Password" />
+	<span asp-validation-for="Password"></span>
+	<button type="submit">Register</button>
 </form>
