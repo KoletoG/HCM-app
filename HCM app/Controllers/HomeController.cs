@@ -30,7 +30,15 @@ namespace HCM_app.Controllers
         {
             return View();
         }
+        public IActionResult LoginMain()
+        {
+            return View();
+        }
+        public IActionResult Login(LoginViewModel loginModel)
+        {
 
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
