@@ -1,2 +1,17 @@
 ﻿@using HCM_app.ViewModels
 @model LoginViewModel
+<form asp-action="Login" asp-controller="Home" method="post">
+	<div>
+		@Html.DisplayNameFor(m => m.Email)
+		<input asp-for="Email">
+		<span asp-validation-for="Email" class="text-danger"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(m => m.Password)
+		<input asp-for="Password">
+		<span asp-validation-for="Password" class="text-danger"></span>
+	</div>
+	<div>
+		<button type="submit">Log in</button>
+	</div>
+</form> 

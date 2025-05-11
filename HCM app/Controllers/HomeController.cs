@@ -32,7 +32,7 @@ namespace HCM_app.Controllers
         }
         public IActionResult LoginMain()
         {
-            return View();
+            return View("Login");
         }
         public IActionResult Login(LoginViewModel loginModel)
         {
