@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedModels;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Data.Common;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -57,9 +58,16 @@ namespace CRUDHCM_API.Controllers
         [HttpPost("users")]
         public async Task<IActionResult> AddUser([FromBody] UserDataModel user)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("AddUser",user);
+            }
+            catch (DbException)
+            {
+                return Problem("Problem occured with saving to database");
+            }
         }
         [HttpPatch]
         public async Task<IActionResult> PatchUser(string id, [FromBody] JsonPatchDocument<UserDataModel> patchDoc)

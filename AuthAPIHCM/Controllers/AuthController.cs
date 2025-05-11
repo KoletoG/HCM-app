@@ -22,10 +22,13 @@ namespace AuthAPIHCM.Controllers
         private readonly ApplicationDbContext _context;
 
         private readonly IAuthService _authService;
-        public AuthController(ApplicationDbContext context, IAuthService authService)
+        private readonly HttpClient _clientCRUD;
+        public AuthController(ApplicationDbContext context, IAuthService authService, IHttpClientFactory clientFactory)
         {
             _context = context;
             _authService = authService;
+            _clientCRUD = clientFactory.CreateClient();
+            _clientCRUD.BaseAddress= new Uri("https://localhost:7261/");
         }
 
         [HttpPost("login")]
@@ -48,6 +51,30 @@ namespace AuthAPIHCM.Controllers
             var token = _authService.GenerateJwtToken(user);
             string name = User.Identity.Name;
             return Ok(token);
+        }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterViewModel registerModel)
+        {
+            UserDataModel user = new UserDataModel();
+            user.Id = Guid.NewGuid().ToString();
+            user.Email = registerModel.Email;
+            user.Salary = registerModel.Salary;
+            user.Role = "Employee";
+            user.LastName = registerModel.LastName;
+            user.FirstName = registerModel.FirstName;
+            user.Department = registerModel.Department;
+            user.JobTitle = registerModel.JobTitle;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerModel.Password);
+            var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
+            if (result.IsSuccessStatusCode)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return Problem("User not registered.");
+            }
+
         }
     }
 }
