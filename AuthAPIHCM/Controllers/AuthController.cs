@@ -10,6 +10,8 @@ using AuthAPIHCM.Data;
 using AuthAPIHCM.Services;
 using AuthAPIHCM.Interfaces;
 using BCrypt.Net;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuthAPIHCM.Controllers
 {
@@ -27,6 +29,7 @@ namespace AuthAPIHCM.Controllers
         }
 
         [HttpPost("login")]
+        [Authorize(Roles ="HrAdmin")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == loginModel.Email);
@@ -42,7 +45,7 @@ namespace AuthAPIHCM.Controllers
                     return Unauthorized("Invalid credentials");
                 }
             }
-
+            var userRole = User.FindFirst(ClaimTypes.Role).Value;
             var token = _authService.GenerateJwtToken(user);
             return Ok(new { Token = token });
         }

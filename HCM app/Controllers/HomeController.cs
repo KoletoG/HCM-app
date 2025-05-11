@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
-using HCM_app.Attributes;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,13 +21,11 @@ namespace HCM_app.Controllers
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
         }
-        [JWTAuthorize]
         public async Task<IActionResult> Index()
         {
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
             return View(users);
         }
-        [JWTAuthorize]
         public async Task<IActionResult> AddUser()
         {
             var currentEmail = this.HttpContext.Session.Get("email");
@@ -36,7 +33,6 @@ namespace HCM_app.Controllers
             var user = await _clientCRUD.GetAsync($"api/CRUD/users/{currentEmail}");
             return View();
         }
-        [JWTAuthorize]
         public async Task<IActionResult> AddUserMain()
         {
             var currentRole = this.HttpContext.Session.GetString("role");

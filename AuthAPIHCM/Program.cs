@@ -5,6 +5,7 @@ using AuthAPIHCM.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SharedModels;
 
 namespace AuthAPIHCM
 {
@@ -48,9 +49,11 @@ namespace AuthAPIHCM
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
+            }); 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("HrAdminPolicy", policy => policy.RequireRole(UserRole.HrAdmin.ToString()));
             });
-            builder.Services.AddAuthentication();
-            builder.Services.AddAuthorization();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
