@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
+using HCM_app.Attributes;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +22,7 @@ namespace HCM_app.Controllers
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
         }
+        [JWTAuthorize]
         public async Task<IActionResult> Index()
         {
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
