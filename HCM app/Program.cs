@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using Ganss.Xss;
 using HCM_app.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +35,7 @@ namespace HCM_app
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
+            builder.Services.AddScoped<IHtmlSanitizer, HtmlSanitizer>();
             builder.Services.AddAuthentication()
         .AddJwtBearer(options =>
         {

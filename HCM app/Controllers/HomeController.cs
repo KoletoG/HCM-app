@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Ganss.Xss;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -25,11 +26,14 @@ namespace HCM_app.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly HttpClient _clientAuth;
         private readonly HttpClient _clientCRUD;
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client)
+        private readonly IHtmlSanitizer _htmlSanitizer;
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer)
         {
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
+            _htmlSanitizer = htmlSanitizer;
+            _htmlSanitizer.AllowedTags.Clear();
         }
         public async Task<IActionResult> Index()
         {
@@ -55,6 +59,8 @@ namespace HCM_app.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginModel)
         {
+            loginModel.Email = _htmlSanitizer.Sanitize(loginModel.Email);
+            loginModel.Password = _htmlSanitizer.Sanitize(loginModel.Password);
             if (!ModelState.IsValid)
             {
                 return View(loginModel);
@@ -83,7 +89,7 @@ namespace HCM_app.Controllers
             }
             return Problem();
         }
-        [HttpGet]
+        [HttpGet] // MAKE PROFILE VIEW WITH VALIDATIONS
         public async Task<IActionResult> Profile()
         {
             if(!HttpContext.Session.TryGetValue("jwt",out var token))
