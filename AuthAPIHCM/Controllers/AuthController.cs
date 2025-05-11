@@ -23,11 +23,11 @@ namespace AuthAPIHCM.Controllers
 
         private readonly IAuthService _authService;
         private readonly HttpClient _clientCRUD;
-        public AuthController(ApplicationDbContext context, IAuthService authService, IHttpClientFactory clientFactory)
+        public AuthController(ApplicationDbContext context, IAuthService authService)
         {
             _context = context;
             _authService = authService;
-            _clientCRUD = clientFactory.CreateClient();
+            _clientCRUD = new HttpClient();
             _clientCRUD.BaseAddress= new Uri("https://localhost:7261/");
         }
 
@@ -64,6 +64,7 @@ namespace AuthAPIHCM.Controllers
             user.FirstName = registerModel.FirstName;
             user.Department = registerModel.Department;
             user.JobTitle = registerModel.JobTitle;
+            user.Password=registerModel.Password;
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerModel.Password);
             var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
             if (result.IsSuccessStatusCode)

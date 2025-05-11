@@ -25,7 +25,7 @@ namespace SharedModels
         [Required]
         public string Department { get; set; }
         [Required]
-        [NotMapped]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }
