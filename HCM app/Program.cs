@@ -23,7 +23,15 @@ namespace HCM_app
             builder.Services.AddHttpClient("CRUDAPI", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:7261/");
-            }); builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            }); 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
@@ -37,15 +45,7 @@ namespace HCM_app
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
             };
         });
-            builder.Services.AddDistributedMemoryCache();
-            builder.Services.AddSession(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-            });
-            builder.Services.AddAuthentication();
-            builder.Services.AddAuthorization(options=>options.AddPolicy("HrAdminPolicy",x=>x.RequireClaim("HrAdmin")));
+            builder.Services.AddAuthorization(options => options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin")));
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -58,8 +58,8 @@ namespace HCM_app
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

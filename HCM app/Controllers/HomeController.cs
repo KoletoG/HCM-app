@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.Json;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,11 @@ namespace HCM_app.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("HrAdmin"))
+            {
+
+            }
+            var currentRole = User.FindFirst(ClaimTypes.Role)?.Value;
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
             return View(users);
         }

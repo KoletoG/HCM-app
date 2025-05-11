@@ -38,15 +38,15 @@ namespace AuthAPIHCM.Controllers
             }
             if(loginModel.Email!= "john.doe@company.com")
             {
+                user.Role = "HrAdmin";
                 var passwordHashLogin = BCrypt.Net.BCrypt.HashPassword(loginModel.Password);
                 if (!BCrypt.Net.BCrypt.Verify(passwordHashLogin, user.PasswordHash))
                 {
                     return Unauthorized("Invalid credentials");
                 }
             }
-            var userRole = User.FindFirst(ClaimTypes.Role).Value;
             var token = _authService.GenerateJwtToken(user);
-            return Ok(new { Token = token });
+            return Ok(token);
         }
     }
 }
