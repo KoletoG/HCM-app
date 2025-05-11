@@ -21,18 +21,18 @@ namespace AuthAPIHCM.Services
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim("role", user.Role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha123123123123123123123123123123123123"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
+                issuer: "your_issuer",
+                audience: "your_audience",
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.MaxValue,
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

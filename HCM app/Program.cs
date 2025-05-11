@@ -1,6 +1,7 @@
-using System.Text;
+﻿using System.Text;
 using HCM_app.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,6 +14,7 @@ namespace HCM_app
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            var secretkey = Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha123123123123123123123123123123123123");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddHttpClient("AuthAPI", client =>
@@ -31,22 +33,28 @@ namespace HCM_app
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
         .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = "your_issuer",
-                ValidAudience = "your_audience",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha")),
-                ClockSkew = TimeSpan.Zero
-            }; 
+                 options.TokenValidationParameters.ValidateIssuer = true;
+                 options.TokenValidationParameters.ValidateAudience = true;
+                 options.TokenValidationParameters.ValidateIssuerSigningKey = true;
+                 options.TokenValidationParameters.ValidIssuer = "your_issuer";
+                 options.TokenValidationParameters.ValidAudience = "your_audience";
+                 options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
+                 options.TokenValidationParameters.RoleClaimType = "role";
+        }); builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));
+            options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                .RequireAuthenticatedUser().Build());
         });
-            builder.Services.AddAuthorization(options => options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin")));
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -55,7 +63,6 @@ namespace HCM_app
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseSession();

@@ -8,6 +8,9 @@ using SharedModels;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Data.Common;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -22,6 +25,7 @@ namespace CRUDHCM_API.Controllers
             _context = context;
         }
         [HttpGet("users")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.ToListAsync();

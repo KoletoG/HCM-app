@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using SharedModels;
 
 namespace HCM_app.Controllers
@@ -25,19 +29,17 @@ namespace HCM_app.Controllers
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
-            /*
-            if(HttpContext.Session.TryGetValue("jwt", out var token))
-            {
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
-                _clientAuth.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
-            }
-            */
         }
         public async Task<IActionResult> Index()
         {
             var token = this.HttpContext.Session.GetString("jwt");
-            var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
-            return View(users);
+            if (token != null)
+            {
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
+                return View(users);
+            }
+            return RedirectToAction("Login");
         }
         public async Task<IActionResult> AddUser()
         {
