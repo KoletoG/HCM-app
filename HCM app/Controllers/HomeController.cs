@@ -71,6 +71,10 @@ namespace HCM_app.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(registerModel);
+            }
             var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", registerModel);
             if (result.IsSuccessStatusCode)
             {
