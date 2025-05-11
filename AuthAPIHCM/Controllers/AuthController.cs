@@ -46,6 +46,7 @@ namespace AuthAPIHCM.Controllers
                 }
             }
             var token = _authService.GenerateJwtToken(user);
+            string name = User.Identity.Name;
             return Ok(token);
         }
     }

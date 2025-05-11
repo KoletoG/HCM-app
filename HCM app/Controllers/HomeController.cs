@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
@@ -21,14 +22,13 @@ namespace HCM_app.Controllers
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
+            var token = HttpContext.Session.GetString("jwt");
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
         }
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("HrAdmin"))
-            {
-
-            }
-            var currentRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var token = this.HttpContext.Session.GetString("jwt");
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
             return View(users);
         }
@@ -39,7 +39,6 @@ namespace HCM_app.Controllers
             var user = await _clientCRUD.GetAsync($"api/CRUD/users/{currentEmail}");
             return View();
         }
-        [Authorize(Roles = "HrAdmin")]
         public async Task<IActionResult> AddUserMain()
         {
             return View();

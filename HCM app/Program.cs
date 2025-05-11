@@ -43,7 +43,7 @@ namespace HCM_app
                 ValidIssuer = "your_issuer",
                 ValidAudience = "your_audience",
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
-            };
+            }; 
         });
             builder.Services.AddAuthorization(options => options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin")));
             var app = builder.Build();
