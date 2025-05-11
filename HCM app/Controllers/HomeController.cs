@@ -50,9 +50,10 @@ namespace HCM_app.Controllers
         {
             return View();
         }
-        public IActionResult LoginMain()
+        [HttpGet]
+        public IActionResult Login()
         {
-            return View("Login");
+            return View();
         }
         [ValidateAntiForgeryToken]
         [HttpPost]
