@@ -30,33 +30,6 @@ namespace HCM_app.Controllers
         {
             return View();
         }
-        [Route("register")]
-        public IActionResult RegisterMain()
-        {
-            return View("Register");
-        }
-        [Route("register/errors")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel registerModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-            UserDataModel user = new UserDataModel();
-            user.JobTitle=registerModel.JobTitle;
-            user.Salary=registerModel.Salary;
-            user.Email=registerModel.Email;
-            user.FirstName=registerModel.FirstName;
-            user.LastName=registerModel.LastName;
-            user.Password=registerModel.Password;
-            user.Id = Guid.NewGuid().ToString();
-            user.PasswordHash = "234";
-            user.Role = UserRole.Employee;
-            var result = await _clientAuth.PostAsJsonAsync("api/Auth/register", user);
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
