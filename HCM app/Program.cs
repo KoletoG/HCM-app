@@ -42,7 +42,8 @@ namespace HCM_app
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = "your_issuer",
                 ValidAudience = "your_audience",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha"))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha")),
+                ClockSkew = TimeSpan.Zero
             }; 
         });
             builder.Services.AddAuthorization(options => options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin")));

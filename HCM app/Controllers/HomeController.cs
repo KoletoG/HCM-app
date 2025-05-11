@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -68,6 +69,9 @@ namespace HCM_app.Controllers
             {
                 var token = await result.Content.ReadAsStringAsync();
                 HttpContext.Session.SetString("jwt", token);
+                JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+                var resul1 = jwtSecurityTokenHandler.ReadJwtToken(token);
+                var resulttt = resul1.Subject;
                 return RedirectToAction("Index", "Home");
             }
             return View();
