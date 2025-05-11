@@ -44,6 +44,8 @@ namespace HCM_app.Controllers
             {
                 var token = await result.Content.ReadAsStringAsync();
                 HttpContext.Session.SetString("jwt", token);
+                HttpContext.Session.SetString("email",loginModel.Email);
+                return RedirectToAction("Index", "Home");
             }
             return View();
         }
