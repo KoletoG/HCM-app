@@ -58,6 +58,10 @@ namespace HCM_app.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(loginModel);
+            }
             var result = await _clientAuth.PostAsJsonAsync<LoginViewModel>("api/auth/login",loginModel);
             if (result.IsSuccessStatusCode)
             {

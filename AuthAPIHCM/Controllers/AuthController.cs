@@ -41,15 +41,12 @@ namespace AuthAPIHCM.Controllers
             }
             if(loginModel.Email!= "john.doe@company.com")
             {
-                user.Role = "HrAdmin";
-                var passwordHashLogin = BCrypt.Net.BCrypt.HashPassword(loginModel.Password);
-                if (!BCrypt.Net.BCrypt.Verify(passwordHashLogin, user.PasswordHash))
+                if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.PasswordHash))
                 {
                     return Unauthorized("Invalid credentials");
                 }
             }
             var token = _authService.GenerateJwtToken(user);
-            string name = User.Identity.Name;
             return Ok(token);
         }
         [HttpPost("register")]
@@ -59,7 +56,14 @@ namespace AuthAPIHCM.Controllers
             user.Id = Guid.NewGuid().ToString();
             user.Email = registerModel.Email;
             user.Salary = registerModel.Salary;
-            user.Role = "Employee";
+            if (registerModel.Email != "admin@email.com")
+            {
+                user.Role = "Employee";
+            }
+            else
+            {
+                user.Role = "HrAdmin";
+            }
             user.LastName = registerModel.LastName;
             user.FirstName = registerModel.FirstName;
             user.Department = registerModel.Department;
