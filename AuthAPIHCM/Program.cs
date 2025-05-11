@@ -21,17 +21,13 @@ namespace AuthAPIHCM
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            builder.Services.AddAuthentication()
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters.ValidateIssuer = true;
             options.TokenValidationParameters.ValidateAudience = true;
             options.TokenValidationParameters.ValidateIssuerSigningKey = true;
+            options.TokenValidationParameters.ValidateLifetime = true;
             options.TokenValidationParameters.ValidIssuer = "your_issuer";
             options.TokenValidationParameters.ValidAudience = "your_audience";
             options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
@@ -47,9 +43,6 @@ namespace AuthAPIHCM
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));
-                options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                    .RequireAuthenticatedUser().Build());
             });
             builder.Services.AddSingleton<IAuthService, AuthService>();
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

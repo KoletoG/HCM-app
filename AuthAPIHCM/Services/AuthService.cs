@@ -32,7 +32,7 @@ namespace AuthAPIHCM.Services
                 issuer: "your_issuer",
                 audience: "your_audience",
                 claims: claims,
-                expires: DateTime.MaxValue,
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

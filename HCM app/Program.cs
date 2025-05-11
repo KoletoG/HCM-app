@@ -33,27 +33,20 @@ namespace HCM_app
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            builder.Services.AddAuthentication()
         .AddJwtBearer(options =>
         {
                  options.TokenValidationParameters.ValidateIssuer = true;
                  options.TokenValidationParameters.ValidateAudience = true;
                  options.TokenValidationParameters.ValidateIssuerSigningKey = true;
-                 options.TokenValidationParameters.ValidIssuer = "your_issuer";
+            options.TokenValidationParameters.ValidateLifetime = true;
+            options.TokenValidationParameters.ValidIssuer = "your_issuer";
                  options.TokenValidationParameters.ValidAudience = "your_audience";
                  options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
                  options.TokenValidationParameters.RoleClaimType = "role";
         }); builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));
-            options.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                .RequireAuthenticatedUser().Build());
         });
             var app = builder.Build();
             // Configure the HTTP request pipeline.
