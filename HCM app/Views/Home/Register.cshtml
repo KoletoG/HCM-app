@@ -3,19 +3,42 @@
 
 <form asp-action="Register" asp-controller="Home" method="post">
 	@Html.AntiForgeryToken()
-	<input asp-for="FirstName" />
-	<span asp-validation-for="FirstName"></span>
-	<input asp-for="LastName" />
-	<span asp-validation-for="LastName"></span>
-	<input asp-for="Email" />
-	<span asp-validation-for="Email"></span>
-	<input asp-for="Department" />
-	<span asp-validation-for="Department"></span>
-	<input asp-for="Salary" />
-	<span asp-validation-for="Salary"></span>
-	<input asp-for="JobTitle" />
-	<span asp-validation-for="JobTitle"></span>
-	<input asp-for="Password" />
-	<span asp-validation-for="Password"></span>
+	<div>
+
+		@Html.DisplayNameFor(x => x.FirstName)
+		<input asp-for="FirstName" />
+		<span asp-validation-for="FirstName"></span>
+	</div>
+	<div>
+
+		@Html.DisplayNameFor(x => x.LastName)
+		<input asp-for="LastName" />
+		<span asp-validation-for="LastName"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(x => x.Email)
+		<input asp-for="Email" />
+		<span asp-validation-for="Email"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(x => x.Department)
+		<input asp-for="Department" />
+		<span asp-validation-for="Department"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(x => x.Salary)
+		<input asp-for="Salary" />
+		<span asp-validation-for="Salary"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(x => x.JobTitle)
+		<input asp-for="JobTitle" />
+		<span asp-validation-for="JobTitle"></span>
+	</div>
+	<div>
+		@Html.DisplayNameFor(x => x.Password)
+		<input asp-for="Password" />
+		<span asp-validation-for="Password"></span>
+	</div>
 	<button type="submit">Register</button>
 </form>

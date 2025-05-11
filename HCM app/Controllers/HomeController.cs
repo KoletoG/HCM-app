@@ -3,10 +3,12 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using SharedModels;
 
@@ -22,12 +24,13 @@ namespace HCM_app.Controllers
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
-            var token = HttpContext.Session.GetString("jwt");
-            if (token != null)
+            /*
+            if(HttpContext.Session.TryGetValue("jwt", out var token))
             {
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                _clientAuth.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
+                _clientAuth.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
             }
+            */
         }
         public async Task<IActionResult> Index()
         {
@@ -73,6 +76,11 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("LoginMain", "Home");
             }
+            return View();
+        }
+        [HttpGet]
+        public IActionResult Register()
+        {
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
