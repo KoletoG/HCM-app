@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using AuthAPIHCM.Data;
 using AuthAPIHCM.Interfaces;
 using AuthAPIHCM.Services;
@@ -31,7 +32,7 @@ namespace AuthAPIHCM
             options.TokenValidationParameters.ValidIssuer = "your_issuer";
             options.TokenValidationParameters.ValidAudience = "your_audience";
             options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
-            options.TokenValidationParameters.RoleClaimType = "role";
+            options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
         });
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>

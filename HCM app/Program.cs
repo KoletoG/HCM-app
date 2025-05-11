@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using HCM_app.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,7 @@ namespace HCM_app
             options.TokenValidationParameters.ValidIssuer = "your_issuer";
                  options.TokenValidationParameters.ValidAudience = "your_audience";
                  options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
-                 options.TokenValidationParameters.RoleClaimType = "role";
+                 options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
         }); builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));

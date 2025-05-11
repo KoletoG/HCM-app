@@ -21,7 +21,7 @@ namespace AuthAPIHCM.Services
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim("role", user.Role),
+            new Claim(ClaimTypes.Role, user.Role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

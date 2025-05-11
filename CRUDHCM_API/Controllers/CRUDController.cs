@@ -25,7 +25,7 @@ namespace CRUDHCM_API.Controllers
             _context = context;
         }
         [HttpGet("users")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="HrAdmin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.ToListAsync();

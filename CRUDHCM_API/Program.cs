@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Claims;
 using System.Text;
 using CRUDHCM_API.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,7 +32,7 @@ namespace CRUDHCM_API
             options.TokenValidationParameters.ValidIssuer = "your_issuer";
             options.TokenValidationParameters.ValidAudience = "your_audience";
             options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
-            options.TokenValidationParameters.RoleClaimType = "role";
+            options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
         });
             builder.Services.AddAuthorization(options => 
             {
