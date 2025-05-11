@@ -28,7 +28,24 @@ namespace HCM_app.Controllers
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>("api/CRUD/users");
             return View(users);
         }
-
+        [JWTAuthorize]
+        public async Task<IActionResult> AddUser()
+        {
+            var currentEmail = this.HttpContext.Session.Get("email");
+            var currentRole = this.HttpContext.Session.Get("role");
+            var user = await _clientCRUD.GetAsync($"api/CRUD/users/{currentEmail}");
+            return View();
+        }
+        [JWTAuthorize]
+        public async Task<IActionResult> AddUserMain()
+        {
+            var currentRole = this.HttpContext.Session.GetString("role");
+            if (currentRole != UserRole.HrAdmin.ToString())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
@@ -45,6 +62,8 @@ namespace HCM_app.Controllers
                 var token = await result.Content.ReadAsStringAsync();
                 HttpContext.Session.SetString("jwt", token);
                 HttpContext.Session.SetString("email",loginModel.Email);
+                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/email-{loginModel.Email}");
+                HttpContext.Session.SetString("role", user.Role.ToString());
                 return RedirectToAction("Index", "Home");
             }
             return View();

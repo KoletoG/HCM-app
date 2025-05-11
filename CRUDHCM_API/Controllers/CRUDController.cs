@@ -40,6 +40,19 @@ namespace CRUDHCM_API.Controllers
                 return NotFound();
             }
         }
+        [HttpGet("users/email-{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (user != default)
+            {
+                return Ok(user);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
 
         [HttpPost("users")]
         public async Task<IActionResult> AddUser([FromBody] UserDataModel user)
