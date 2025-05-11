@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using HCM_app.ViewModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
@@ -81,6 +82,29 @@ namespace HCM_app.Controllers
                 return RedirectToAction("LoginMain", "Home");
             }
             return Problem();
+        }
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            if(!HttpContext.Session.TryGetValue("jwt",out var token))
+            {
+                return RedirectToAction("Login","Home");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var secToken = handler.ReadJwtToken(Encoding.UTF8.GetString(token));
+            var email = secToken.Claims.First(x=>x.Type == "sub").Value;
+            var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/email-{email}");
+            ProfileViewModel profileViewModel = new ProfileViewModel()
+            {
+                Email = user.Email,
+                FirstName=user.FirstName,
+                LastName=user.LastName,
+                Department=user.Department,
+                JobTitle=user.JobTitle,
+                Role = user.Role,
+                Salary=user.Salary
+            };
+            return View(profileViewModel);
         }
         [HttpGet]
         public IActionResult Register()
