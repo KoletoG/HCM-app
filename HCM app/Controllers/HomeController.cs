@@ -41,14 +41,6 @@ namespace HCM_app.Controllers
             }
             return RedirectToAction("Login");
         }
-        public async Task<IActionResult> AddUser()
-        {
-            return View();
-        }
-        public async Task<IActionResult> AddUserMain()
-        {
-            return View();
-        }
         public IActionResult Privacy()
         {
             return View();
