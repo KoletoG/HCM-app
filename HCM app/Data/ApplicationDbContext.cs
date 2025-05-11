@@ -27,7 +27,7 @@ namespace HCM_app.Data
                     Department = "Human Resources",
                     Password = "john123",
                     PasswordHash = "john123",
-                    Role = UserRole.HrAdmin
+                    Role = "HrAdmin"
                 },
                 new UserDataModel
                 {
@@ -40,7 +40,7 @@ namespace HCM_app.Data
                     Department = "IT",
                     Password = "alice123",
                     PasswordHash = "$2a$11$6gHDwIT5oF7kPv/WsZ5xSuJZgYiy0qqosBHT5hyvTjxESfCLOEBoK",
-                    Role = UserRole.Employee
+                    Role = "Employee"
                 },
                 new UserDataModel
                 {
@@ -53,7 +53,7 @@ namespace HCM_app.Data
                     Department = "IT",
                     Password = "bob123",
                     PasswordHash = "$2a$11$WkN0zZ6xNmBxLKNZKb7Lz.CDuvOl/aI6uR5Y31ECR6sIzLrz0xuU2",
-                    Role = UserRole.Manager
+                    Role = "Employee"
                 },
                 new UserDataModel
                 {
@@ -66,7 +66,7 @@ namespace HCM_app.Data
                     Department = "Analytics",
                     Password = "eve123",
                     PasswordHash = "$2a$11$uFxI9zGB3EPPylxJzDJ01O9mxvhvn4tNzXn2uFub02YjKl3K5q6a6",
-                    Role = UserRole.Employee
+                    Role = "Manager"
                 },
                 new UserDataModel
                 {
@@ -79,7 +79,7 @@ namespace HCM_app.Data
                     Department = "Finance",
                     Password = "charlie123",
                     PasswordHash = "$2a$11$ZOfVLQjZas3zF7TFoTeZp.7V/qew5cqvPcNCQs5tQZ0Txlri3F5FS",
-                    Role = UserRole.Manager
+                    Role = "Manager"
                 }
             );
         }

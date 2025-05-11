@@ -52,7 +52,7 @@ namespace AuthAPIHCM
             }); 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("HrAdminPolicy", policy => policy.RequireRole(UserRole.HrAdmin.ToString()));
+                options.AddPolicy("HrAdminPolicy", policy => policy.RequireRole("HrAdmin"));
             });
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

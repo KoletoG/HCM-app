@@ -35,11 +35,6 @@ namespace HCM_app.Controllers
         }
         public async Task<IActionResult> AddUserMain()
         {
-            var currentRole = this.HttpContext.Session.GetString("role");
-            if (currentRole != UserRole.HrAdmin.ToString())
-            {
-                return RedirectToAction("Index", "Home");
-            }
             return View();
         }
         public IActionResult Privacy()

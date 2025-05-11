@@ -23,16 +23,10 @@ namespace SharedModels
         [NotMapped]
         public string Password { get; set; }
         public string PasswordHash { get; set; }
-        public UserRole Role { get; set; }
+        public string Role { get; set; }
         public UserDataModel()
         {
 
         }
-    }
-    public enum UserRole
-    {
-        Employee,
-        Manager,
-        HrAdmin
     }
 }
