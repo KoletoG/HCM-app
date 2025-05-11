@@ -1,0 +1,6 @@
+﻿@using SharedModels
+@model RegisterViewModel
+
+<form asp-action="Register" asp-controller="Home" method="post">
+	@Html.AntiForgeryToken()
+</form>

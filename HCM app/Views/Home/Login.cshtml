@@ -1,6 +1,7 @@
 ﻿@using SharedModels
 @model LoginViewModel
 <form asp-action="Login" asp-controller="Home" method="post">
+	@Html.AntiForgeryToken()
 	<div>
 		@Html.DisplayNameFor(m => m.Email)
 		<input asp-for="Email">

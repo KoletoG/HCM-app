@@ -23,8 +23,11 @@ namespace HCM_app.Controllers
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
             var token = HttpContext.Session.GetString("jwt");
-            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
+            if (token != null)
+            {
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                _clientAuth.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
         public async Task<IActionResult> Index()
         {
@@ -34,9 +37,6 @@ namespace HCM_app.Controllers
         }
         public async Task<IActionResult> AddUser()
         {
-            var currentEmail = this.HttpContext.Session.Get("email");
-            var currentRole = this.HttpContext.Session.Get("role");
-            var user = await _clientCRUD.GetAsync($"api/CRUD/users/{currentEmail}");
             return View();
         }
         public async Task<IActionResult> AddUserMain()
@@ -51,6 +51,8 @@ namespace HCM_app.Controllers
         {
             return View("Login");
         }
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginModel)
         {
             var result = await _clientAuth.PostAsJsonAsync<LoginViewModel>("api/auth/login",loginModel);
@@ -58,10 +60,16 @@ namespace HCM_app.Controllers
             {
                 var token = await result.Content.ReadAsStringAsync();
                 HttpContext.Session.SetString("jwt", token);
-                HttpContext.Session.SetString("email",loginModel.Email);
-                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/email-{loginModel.Email}");
-                HttpContext.Session.SetString("role", user.Role.ToString());
                 return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+        public async Task<IActionResult> Register(RegisterViewModel registerModel)
+        {
+            var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", registerModel);
+            if (result.IsSuccessStatusCode)
+            {
+                return RedirectToAction("LoginMain", "Home");
             }
             return View();
         }
