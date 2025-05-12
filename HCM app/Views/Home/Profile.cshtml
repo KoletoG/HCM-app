@@ -1,4 +1,31 @@
 ﻿@using HCM_app.ViewModels
 @model ProfileViewModel
 
-<h1>@Model.FirstName</h1>
+<div>
+	@Html.DisplayNameFor(x => x.FirstName)
+	@Model.FirstName
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.LastName)
+	@Model.LastName
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.Email)
+	@Model.Email
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.Department)
+	@Model.Department
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.JobTitle)
+	@Model.JobTitle
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.Salary)
+	@Model.Salary
+</div>
+<div>
+	@Html.DisplayNameFor(x => x.Role)
+	@Model.Role
+</div>
