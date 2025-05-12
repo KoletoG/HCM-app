@@ -109,7 +109,8 @@ namespace HCM_app.Controllers
                 return RedirectToAction("Index", "Home");
             }
             SanitizeInput(users);
-            if(HasInvalidRole(users))
+            ChangeRoleNaming(users);
+            if (HasInvalidRole(users))
             {
                 ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
             }
