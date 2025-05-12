@@ -95,7 +95,7 @@ namespace CRUDHCM_API.Controllers
                     {
                         if (user.Salary != default)
                         {
-                            userFromDB.Salary = user.Salary;
+                            userFromDB.Salary = user.Salary ?? userFromDB.Salary;
                         }
                         if (user.Email != null)
                         {
