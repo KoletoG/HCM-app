@@ -180,39 +180,54 @@ namespace CRUDHCM_API.Controllers
                 return Problem("Problem occured with saving data to database");
             }
         }
-        [HttpDelete("deleteUsersAdmin")]
+       
+        [HttpDelete("user/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
-        public async Task<IActionResult> DeleteUsersAdmin([FromBody] List<DepartmentUpdateViewModel> users)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             try
             {
-                foreach (var user in users)
+                var user = _context.Users.Where(x => x.Id == id).FirstOrDefault();
+                if (user == null)
                 {
-                   await _context.Users.Where(x => x.Id == user.Id).ExecuteDeleteAsync();
+                    return BadRequest("Invalid user ID");
                 }
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
                 return NoContent();
             }
             catch (DbException)
             {
-                return Problem("Problem occured with deleting data in database");
+                return Problem();
             }
         }
-        [HttpDelete("deleteUsersManager")]
+        [HttpDelete("user/{department}/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
-        public async Task<IActionResult> DeleteUsersManager([FromBody] List<DepartmentUpdateViewModel> users,string department)
+        public async Task<IActionResult> DeleteUser(string id, string department)
         {
             try
             {
-                foreach (var user in users)
+                var user = _context.Users.Where(x=>x.Id==id).FirstOrDefault();
+                if (user == null)
                 {
-                    await _context.Users.Where(x => x.Id == user.Id).ExecuteDeleteAsync();
+                    return BadRequest("Invalid user ID");
                 }
+                if (user.Department == department)
+                {
+                    _context.Users.Remove(user);
+                }
+                else
+                {
+                    return Unauthorized("You cannot delete people from other departments.");
+                }
+                await _context.SaveChangesAsync();
                 return NoContent();
             }
             catch (DbException)
             {
-                return Problem("Problem occured with deleting data in database");
+                return Problem();
             }
         }
+      
     }
 }
