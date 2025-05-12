@@ -1,4 +1,7 @@
 ﻿@using SharedModels
+@using System.IdentityModel.Tokens.Jwt
+@using System.Text
+@using System.Security.Claims
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,9 +27,6 @@
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-						</li>
 						@if (!this.Context.Session.TryGetValue("jwt", out var jwt))
 						{
 							<li class="nav-item">
@@ -38,6 +38,18 @@
 						}
 						else
 						{
+							{
+								var handler = new JwtSecurityTokenHandler();
+								var tokenString = Encoding.UTF8.GetString(jwt);
+								var secToken = handler.ReadJwtToken(tokenString);
+								var role = secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+								if (role == "Manager")
+								{
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Department">Department</a>
+									</li>
+								}
+							}
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Profile</a>
 							</li>
