@@ -46,7 +46,7 @@ namespace HCM_app.Controllers
             }
             return RedirectToAction("Login");
         }
-        public IActionResult Privacy()
+        public IActionResult Department()
         {
             return View();
         }
@@ -89,7 +89,7 @@ namespace HCM_app.Controllers
             }
             return Problem();
         }
-        [HttpGet] // MAKE PROFILE VIEW WITH VALIDATIONS
+        [HttpGet]
         public async Task<IActionResult> Profile()
         {
             if(!HttpContext.Session.TryGetValue("jwt",out var token))
@@ -97,9 +97,11 @@ namespace HCM_app.Controllers
                 return RedirectToAction("Login","Home");
             }
             var handler = new JwtSecurityTokenHandler();
-            var secToken = handler.ReadJwtToken(Encoding.UTF8.GetString(token));
-            var email = secToken.Claims.First(x=>x.Type == "sub").Value;
-            var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/email-{email}");
+            var tokenString = Encoding.UTF8.GetString(token);
+            var secToken = handler.ReadJwtToken(tokenString);
+            var id = secToken.Claims.First(x=>x.Type == "sub").Value;
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
             ProfileViewModel profileViewModel = new ProfileViewModel()
             {
                 Email = user.Email,

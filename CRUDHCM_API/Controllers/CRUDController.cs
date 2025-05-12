@@ -32,7 +32,8 @@ namespace CRUDHCM_API.Controllers
             return Ok(users);
         }
 
-        [HttpGet("users/{id}")]
+        [HttpGet("users/id-{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
