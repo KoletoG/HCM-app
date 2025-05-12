@@ -115,14 +115,15 @@ namespace HCM_app.Controllers
             if (!IsValidSalary(users))
             {
                 ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
-            }            
+            }
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             if (!ModelState.IsValid)
             {
-                return View("Department");
+                var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
+                return View("Department",usersForOutput);
             }
             var id = secToken.Claims.First(x => x.Type == "sub").Value;
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
-            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             department=HttpUtility.UrlEncode(department);
             foreach (var userId in userIdsToDeleteList)
@@ -186,12 +187,13 @@ namespace HCM_app.Controllers
             {
                 ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
             }
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             if (!ModelState.IsValid)
             {
-                return View("AdminPanel");
+                var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
+                return View("AdminPanel",usersForOutput);
             }
             var id = secToken.Claims.First(x => x.Type == "sub").Value;
-            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             foreach (var userId in userIdsToDeleteList)
             {
