@@ -25,10 +25,17 @@ namespace CRUDHCM_API.Controllers
             _context = context;
         }
         [HttpGet("users")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="Manager,HrAdmin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.ToListAsync();
+            return Ok(users);
+        }
+        [HttpGet("users/department-{department}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
+        public async Task<IActionResult> GetAllUsers(string department)
+        {
+            var users = await _context.Users.Where(x => x.Department == department).ToListAsync();
             return Ok(users);
         }
 

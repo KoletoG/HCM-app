@@ -24,7 +24,8 @@ namespace AuthAPIHCM.Services
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Email,user.Email)
+            new Claim(ClaimTypes.Email,user.Email),
+            new Claim("Department",user.Department)
         };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha123123123123123123123123123123123123"));
