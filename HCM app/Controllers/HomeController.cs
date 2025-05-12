@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
@@ -106,6 +107,14 @@ namespace HCM_app.Controllers
                 return RedirectToAction("Index", "Home");
             }
             SanitizeInput(users);
+            if(HasInvalidRole(users))
+            {
+                ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
+            }
+            if (IsValidSalary(users))
+            {
+                ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
+            }            
             if (!ModelState.IsValid)
             {
                 return View("Department");
@@ -119,6 +128,31 @@ namespace HCM_app.Controllers
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
+        }
+        private bool HasInvalidRole(List<DepartmentUpdateViewModel> users)
+        {
+            foreach(var user in users)
+            {
+                if (user.Role != "Manager" && user.Role != "HrAdmin" && user.Role != "Employee" && !string.IsNullOrEmpty(user.Role))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool IsValidSalary(List<DepartmentUpdateViewModel> users)
+        {
+            foreach(var user in users)
+            {
+                if (user.Salary != default)
+                {
+                    if (user.Salary < 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
         // ADD PAGING, CACHING, LIST OF ROLES WHEN UPDATING
         [HttpPost]
@@ -138,6 +172,14 @@ namespace HCM_app.Controllers
                 return RedirectToAction("Index", "Home");
             }
             SanitizeInput(users);
+            if (HasInvalidRole(users))
+            {
+                ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
+            }
+            if (IsValidSalary(users))
+            {
+                ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
+            }
             if (!ModelState.IsValid)
             {
                 return View("AdminPanel");
