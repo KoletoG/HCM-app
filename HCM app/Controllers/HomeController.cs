@@ -66,6 +66,20 @@ namespace HCM_app.Controllers
             {
                 return View(users);
             }
+            if (!HttpContext.Session.TryGetValue("jwt", out var token))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var tokenString = Encoding.UTF8.GetString(token);
+            var secToken = handler.ReadJwtToken(tokenString);
+            var role = secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+            if (role != "Manager")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>("api/CRUD/updateUsers", users);
             return RedirectToAction("Department");
         }
         [HttpPost("updateUser/{user}")]

@@ -11,6 +11,7 @@ using System.Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
+using HCM_app.ViewModels;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -75,6 +76,19 @@ namespace CRUDHCM_API.Controllers
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("AddUser",user);
+            }
+            catch (DbException)
+            {
+                return Problem("Problem occured with saving data to database");
+            }
+        }
+        [HttpPatch("updateUsers")]
+        public async Task<IActionResult> UpdateUsers([FromBody] List<DepartmentUpdateViewModel> users)
+        {
+            try
+            {
+
+                return NoContent();
             }
             catch (DbException)
             {

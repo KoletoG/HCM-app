@@ -5,20 +5,20 @@
 	@for(int i=0;i<Model.Count;i++)
 	{
 		<input type="hidden" value="@Model[i].Id" name="users[@i].Id" />
-		<h5>First Name</h5>
-		<input type="text" value="@Model[i].FirstName" name="users[@i].FirstName" />
-		<h5>LastName</h5>
-		<input type="text" value="@Model[i].LastName" name="users[@i].LastName" />
-		<h5>Email</h5>
-		<input type="text" value="@Model[i].Email" name="users[@i].Email" />
-		<h5>Salary</h5>
-		<input type="number" value="@Model[i].Salary" name="users[@i].Salary" />
-		<h5>Department</h5>
-		<input type="text" value="@Model[i].Department" name="users[@i].Department" />
-		<h5>Job Title</h5>
-		<input type="text" value="@Model[i].JobTitle" name="users[@i].JobTitle" />
-		<h5>Role</h5>
-		<input type="text" value="@Model[i].Role" name="users[@i].Role" />
+		<h5>First Name: @Model[i].FirstName</h5>
+		<input type="text" value="" name="users[@i].FirstName" />
+		<h5>LastName: @Model[i].LastName</h5>
+		<input type="text" value="" name="users[@i].LastName" />
+		<h5>Email: @Model[i].Email</h5>
+		<input type="text" value="" name="users[@i].Email" />
+		<h5>Salary: @Model[i].Salary</h5>
+		<input type="number" value="" name="users[@i].Salary" />
+		<h5>Department: @Model[i].Department</h5>
+		<input type="text" value="" name="users[@i].Department" />
+		<h5>Job Title: @Model[i].JobTitle</h5>
+		<input type="text" value="" name="users[@i].JobTitle" />
+		<h5>Role: @Model[i].Role</h5>
+		<input type="text" value="" name="users[@i].Role" />
 		<br />
 		<br />
 	}
