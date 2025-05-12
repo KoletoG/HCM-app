@@ -42,7 +42,7 @@ namespace HCM_app.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Department()
+        public async Task<IActionResult> UpdateUsersManager()
         {
             if (!HttpContext.Session.TryGetValue("jwt", out var token))
             {
@@ -58,10 +58,10 @@ namespace HCM_app.Controllers
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}");
-            return View(users);
+            return View(new UsersToUpdateViewModel(users));
         }
         [HttpGet]
-        public async Task<IActionResult> AdminPanel()
+        public async Task<IActionResult> UpdateUsersAdmin()
         {
             if (!HttpContext.Session.TryGetValue("jwt", out var token))
             {
@@ -76,7 +76,7 @@ namespace HCM_app.Controllers
             }
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
-            return View(users);
+            return View(new UsersToUpdateViewModel(users));
         }
         private void SanitizeInput(List<DepartmentUpdateViewModel> viewModel)
         {
@@ -120,7 +120,8 @@ namespace HCM_app.Controllers
             if (!ModelState.IsValid)
             {
                 var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
-                return View("Department",usersForOutput);
+                List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+                return View(new UsersToUpdateViewModel(usersForOutput, errors));
             }
             var id = secToken.Claims.First(x => x.Type == "sub").Value;
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
@@ -191,7 +192,8 @@ namespace HCM_app.Controllers
             if (!ModelState.IsValid)
             {
                 var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
-                return View("AdminPanel",usersForOutput);
+                List<string> errors = ModelState.Values.SelectMany(x=>x.Errors).Select(x=>x.ErrorMessage).ToList();
+                return View(new UsersToUpdateViewModel(usersForOutput,errors));
             }
             var id = secToken.Claims.First(x => x.Type == "sub").Value;
             var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();

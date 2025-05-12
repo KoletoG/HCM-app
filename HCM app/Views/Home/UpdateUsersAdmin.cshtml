@@ -1,24 +1,30 @@
 ﻿@using SharedModels
-@model List<UserDataModel>
-
-<form asp-action="UpdateUsersManager" asp-controller="Home" method="post">
-	@Html.AntiForgeryToken()
-	@for(int i=0;i<Model.Count;i++)
+@model UsersToUpdateViewModel
+@if (Model.Errors != null)
+{
+	foreach (string error in Model.Errors)
 	{
-		<input type="hidden" value="@Model[i].Id" name="users[@i].Id" />
-		<h5>First Name: @Model[i].FirstName</h5>
+		<h4 class="text-danger">@error</h4>
+	}
+}
+<form asp-action="UpdateUsersAdmin" asp-controller="Home" method="post">
+	@Html.AntiForgeryToken()
+	@for (int i = 0; i < Model.Users.Count; i++)
+	{
+		<input type="hidden" value="@Model.Users[i].Id" name="users[@i].Id" />
+		<h5>First Name: @Model.Users[i].FirstName</h5>
 		<input type="text" value="" name="users[@i].FirstName" />
-		<h5>LastName: @Model[i].LastName</h5>
+		<h5>LastName: @Model.Users[i].LastName</h5>
 		<input type="text" value="" name="users[@i].LastName" />
-		<h5>Email: @Model[i].Email</h5>
+		<h5>Email: @Model.Users[i].Email</h5>
 		<input type="text" value="" name="users[@i].Email" />
-		<h5>Salary: @Model[i].Salary</h5>
+		<h5>Salary: @Model.Users[i].Salary</h5>
 		<input type="number" value="" name="users[@i].Salary" />
-		<h5>Department: @Model[i].Department</h5>
+		<h5>Department: @Model.Users[i].Department</h5>
 		<input type="text" value="" name="users[@i].Department" />
-		<h5>Job Title: @Model[i].JobTitle</h5>
+		<h5>Job Title: @Model.Users[i].JobTitle</h5>
 		<input type="text" value="" name="users[@i].JobTitle" />
-		<h5>Role: @Model[i].Role</h5>
+		<h5>Role: @Model.Users[i].Role</h5>
 		<input type="text" value="" name="users[@i].Role" />
 		<h5>Delete user? :</h5>
 		<input name="users[@i].ShouldDelete" type="checkbox" class="form-check-input" value="true" />
