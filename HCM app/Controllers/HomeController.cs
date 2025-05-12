@@ -120,13 +120,17 @@ namespace HCM_app.Controllers
             {
                 return View("Department");
             }
+            var id = secToken.Claims.First(x => x.Type == "sub").Value;
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             department=HttpUtility.UrlEncode(department);
             foreach (var userId in userIdsToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{department}/{HttpUtility.UrlEncode(userId)}");
+                if (userId != id)
+                {
+                    await _clientCRUD.DeleteAsync($"api/CRUD/user/{department}/{HttpUtility.UrlEncode(userId)}");
+                }
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
@@ -186,11 +190,15 @@ namespace HCM_app.Controllers
             {
                 return View("AdminPanel");
             }
+            var id = secToken.Claims.First(x => x.Type == "sub").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             foreach (var userId in userIdsToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{HttpUtility.UrlEncode(userId)}");
+                if (userId != id)
+                {
+                    await _clientCRUD.DeleteAsync($"api/CRUD/user/{HttpUtility.UrlEncode(userId)}");
+                }
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("AdminPanel");
