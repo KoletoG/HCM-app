@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
 using HCM_app.ViewModels;
+using System.Web;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -88,6 +89,7 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
+                department=HttpUtility.UrlDecode(department);
                 var usersFromDB = await _context.Users.Where(x => x.Department == department).ToDictionaryAsync(x=>x.Id);
                 foreach(var user in users)
                 {
@@ -187,6 +189,7 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
+                id=HttpUtility.UrlDecode(id);
                 var user = _context.Users.Where(x => x.Id == id).FirstOrDefault();
                 if (user == null)
                 {
@@ -207,6 +210,8 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
+                id=HttpUtility.UrlDecode(id);
+                department=HttpUtility.UrlDecode(department);
                 var user = _context.Users.Where(x=>x.Id==id).FirstOrDefault();
                 if (user == null)
                 {

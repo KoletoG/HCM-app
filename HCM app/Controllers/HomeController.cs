@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 using Ganss.Xss;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -111,7 +112,7 @@ namespace HCM_app.Controllers
             {
                 ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
             }
-            if (IsValidSalary(users))
+            if (!IsValidSalary(users))
             {
                 ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
             }            
@@ -121,10 +122,11 @@ namespace HCM_app.Controllers
             }
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
-            foreach (var user in usersToDeleteList)
+            var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
+            department=HttpUtility.UrlEncode(department);
+            foreach (var userId in userIdsToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user}");
+                await _clientCRUD.DeleteAsync($"api/CRUD/user/{department}/{HttpUtility.UrlEncode(userId)}");
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
@@ -144,7 +146,7 @@ namespace HCM_app.Controllers
         {
             foreach(var user in users)
             {
-                if (user.Salary != default)
+                if (user.Salary!=default)
                 {
                     if (user.Salary < 0)
                     {
@@ -176,7 +178,7 @@ namespace HCM_app.Controllers
             {
                 ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
             }
-            if (IsValidSalary(users))
+            if (!IsValidSalary(users))
             {
                 ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
             }
@@ -185,10 +187,10 @@ namespace HCM_app.Controllers
                 return View("AdminPanel");
             }
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
-            foreach (var user in usersToDeleteList)
+            var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
+            foreach (var userId in userIdsToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user}");
+                await _clientCRUD.DeleteAsync($"api/CRUD/user/{HttpUtility.UrlEncode(userId)}");
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("AdminPanel");
