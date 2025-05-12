@@ -49,7 +49,7 @@ namespace HCM_app.Controllers
             var handler = new JwtSecurityTokenHandler();
             var tokenString = Encoding.UTF8.GetString(token);
             var secToken = handler.ReadJwtToken(tokenString);
-            if (secToken.Claims.First(x=>x.Type==ClaimTypes.Role).Value!="Manager")
+            if (secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value != "Manager")
             {
                 return RedirectToAction("Login", "Home");
             }
@@ -78,15 +78,15 @@ namespace HCM_app.Controllers
         }
         private void SanitizeInput(List<DepartmentUpdateViewModel> viewModel)
         {
-            foreach(var user in viewModel)
+            foreach (var user in viewModel)
             {
-                _htmlSanitizer.Sanitize(user.Id);
-                _htmlSanitizer.Sanitize(user.Department);
-                _htmlSanitizer.Sanitize(user.JobTitle);
-                _htmlSanitizer.Sanitize(user.Email);
-                _htmlSanitizer.Sanitize(user.FirstName);
-                _htmlSanitizer.Sanitize(user.LastName);
-                _htmlSanitizer.Sanitize(user.Role);
+                user.Id = _htmlSanitizer.Sanitize(user.Id);
+                user.Department = _htmlSanitizer.Sanitize(user.Department);
+                user.JobTitle = _htmlSanitizer.Sanitize(user.JobTitle);
+                user.Email = _htmlSanitizer.Sanitize(user.Email);
+                user.FirstName = _htmlSanitizer.Sanitize(user.FirstName);
+                user.LastName = _htmlSanitizer.Sanitize(user.LastName);
+                user.Role = _htmlSanitizer.Sanitize(user.Role);
             }
         }
         [HttpPost]
@@ -111,8 +111,8 @@ namespace HCM_app.Controllers
                 return View("Department");
             }
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
-            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
-            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x=>x.Id).ToList();
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             foreach (var user in usersToDeleteList)
             {
                 await _clientCRUD.DeleteAsync($"api/CRUD/user/{user}");
@@ -125,7 +125,7 @@ namespace HCM_app.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users)
         {
-            if(!HttpContext.Session.TryGetValue("jwt", out var token))
+            if (!HttpContext.Session.TryGetValue("jwt", out var token))
             {
                 return RedirectToAction("Login", "Home");
             }
