@@ -87,7 +87,39 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-
+                foreach(var user in users)
+                {
+                    var userFromDB = await _context.Users.FirstAsync(x => x.Id == user.Id);
+                    if (user.Salary != default)
+                    {
+                        userFromDB.Salary = user.Salary;
+                    }
+                    if(user.Email != null)
+                    {
+                        userFromDB.Email = user.Email;
+                    }
+                    if (user.FirstName != null)
+                    {
+                        userFromDB.FirstName = user.FirstName;
+                    }
+                    if (user.LastName != null)
+                    {
+                        userFromDB.LastName = user.LastName;
+                    }
+                    if (user.JobTitle != null)
+                    {
+                        userFromDB.JobTitle = user.JobTitle;
+                    }
+                    if (user.Department != null)
+                    {
+                        userFromDB.Department = user.Department;
+                    }
+                    if (user.Role != null)
+                    {
+                        userFromDB.Role = user.Role;
+                    }
+                    await _context.SaveChangesAsync();
+                }
                 return NoContent();
             }
             catch (DbException)
