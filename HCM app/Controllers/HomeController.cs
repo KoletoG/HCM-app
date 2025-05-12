@@ -99,10 +99,10 @@ namespace HCM_app.Controllers
             }
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
-            var usersToDeleteList = users.Where(x => x.ShouldDelete).ToList();
+            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x=>x.Id).ToList();
             foreach (var user in usersToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user.Id}");
+                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user}");
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
@@ -128,10 +128,10 @@ namespace HCM_app.Controllers
                 return View("AdminPanel");
             }
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            var usersToDeleteList = users.Where(x => x.ShouldDelete).ToList();
+            var usersToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
             foreach (var user in usersToDeleteList)
             {
-                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user.Id}");
+                await _clientCRUD.DeleteAsync($"api/CRUD/user/{user}");
             }
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("AdminPanel");
