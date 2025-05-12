@@ -122,6 +122,8 @@ namespace HCM_app.Controllers
             {
                 return View("AdminPanel");
             }
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users);
             return RedirectToAction("AdminPanel");
         }
         [HttpGet]

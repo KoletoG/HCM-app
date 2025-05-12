@@ -131,6 +131,55 @@ namespace CRUDHCM_API.Controllers
                 return Problem("Problem occured with saving data to database");
             }
         }
+        [HttpPatch("updateUsersAdmin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
+        public async Task<IActionResult> UpdateUsers([FromBody] List<DepartmentUpdateViewModel> users)
+        {
+            try
+            {
+                var usersFromDB = await _context.Users.ToDictionaryAsync(x => x.Id);
+                foreach (var user in users)
+                {
+                    if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB))
+                    {
+                        if (user.Salary != default)
+                        {
+                            userFromDB.Salary = user.Salary ?? userFromDB.Salary;
+                        }
+                        if (user.Email != null)
+                        {
+                            userFromDB.Email = user.Email;
+                        }
+                        if (user.FirstName != null)
+                        {
+                            userFromDB.FirstName = user.FirstName;
+                        }
+                        if (user.LastName != null)
+                        {
+                            userFromDB.LastName = user.LastName;
+                        }
+                        if (user.JobTitle != null)
+                        {
+                            userFromDB.JobTitle = user.JobTitle;
+                        }
+                        if (user.Department != null)
+                        {
+                            userFromDB.Department = user.Department;
+                        }
+                        if (user.Role != null)
+                        {
+                            userFromDB.Role = user.Role;
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbException)
+            {
+                return Problem("Problem occured with saving data to database");
+            }
+        }
         [HttpPatch]
         public async Task<IActionResult> PatchUser(string id, [FromBody] JsonPatchDocument<UserDataModel> patchDoc)
         {
