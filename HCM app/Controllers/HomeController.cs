@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Web;
 using Ganss.Xss;
+using HCM_app.Migrations;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -137,6 +138,25 @@ namespace HCM_app.Controllers
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
         }
+        private void ChangeRoleNaming(List<DepartmentUpdateViewModel> users)
+        {
+            foreach (var user in users)
+            {
+                string userRoleLowered = user.Role.ToLower();
+                if (userRoleLowered == "manager")
+                {
+                    user.Role = "Manager";
+                }
+                else if (userRoleLowered == "hradmin")
+                {
+                    user.Role = "HrAdmin";
+                }
+                else if (userRoleLowered == "employee")
+                {
+                    user.Role = "Employee";
+                }
+            }
+        }
         private bool HasInvalidRole(List<DepartmentUpdateViewModel> users)
         {
             foreach(var user in users)
@@ -180,6 +200,7 @@ namespace HCM_app.Controllers
                 return RedirectToAction("Index", "Home");
             }
             SanitizeInput(users);
+            ChangeRoleNaming(users);
             if (HasInvalidRole(users))
             {
                 ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
