@@ -7,14 +7,14 @@ namespace HCM_app.ViewModels
     {
         [Required]
         public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         [EmailAddress]
-        public string Email { get; set; }
-        public string JobTitle { get; set; }
+        public string? Email { get; set; }
+        public string? JobTitle { get; set; }
         [DataType(DataType.Currency)]
-        public double Salary { get; set; }
-        public string Department { get; set; }
-        public string Role { get; set; }
+        public double? Salary { get; set; }
+        public string? Department { get; set; }
+        public string? Role { get; set; }
     }
 }

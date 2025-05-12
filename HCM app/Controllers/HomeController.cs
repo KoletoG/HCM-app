@@ -58,7 +58,7 @@ namespace HCM_app.Controllers
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}");
             return View(users);
         }
-        [HttpPost("updateUsers")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUser(List<DepartmentUpdateViewModel> users)
         {

@@ -2,6 +2,7 @@
 @model List<UserDataModel>
 
 <form asp-action="UpdateUser" asp-controller="Home" method="post">
+	@Html.AntiForgeryToken()
 	@for(int i=0;i<Model.Count;i++)
 	{
 		<input type="hidden" value="@Model[i].Id" name="users[@i].Id" />
