@@ -180,7 +180,7 @@ namespace CRUDHCM_API.Controllers
                 return Problem("Problem occured with saving data to database");
             }
         }
-        [HttpDelete("deleteUsers")]
+        [HttpDelete("deleteUsersAdmin")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
         public async Task<IActionResult> DeleteUsersAdmin([FromBody] List<DepartmentUpdateViewModel> users)
         {
@@ -197,49 +197,22 @@ namespace CRUDHCM_API.Controllers
                 return Problem("Problem occured with deleting data in database");
             }
         }
-        [HttpPatch]
-        public async Task<IActionResult> PatchUser(string id, [FromBody] JsonPatchDocument<UserDataModel> patchDoc)
+        [HttpDelete("deleteUsersManager")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
+        public async Task<IActionResult> DeleteUsersManager([FromBody] List<DepartmentUpdateViewModel> users,string department)
         {
-
-            var userOld = await _context.Users.FirstAsync(x => x.Id == id);
-            patchDoc.ApplyTo(userOld); 
-            if (patchDoc.Operations.Any(op => op.path == "/password"))
+            try
             {
-                userOld.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userOld.Password);
+                foreach (var user in users)
+                {
+                    await _context.Users.Where(x => x.Id == user.Id).ExecuteDeleteAsync();
+                }
+                return NoContent();
             }
-            _context.Update(userOld);
-            await _context.SaveChangesAsync();
-            return Ok(userOld);
-        }
-
-        [HttpPut("users/{id}")]
-        public async Task<IActionResult> UpdateUser(string id,[FromBody] UserDataModel user)
-        {
-            if (user.Id != id)
+            catch (DbException)
             {
-                return BadRequest("User Id doesn't match the id from the URL.");
+                return Problem("Problem occured with deleting data in database");
             }
-            var userOld = await _context.Users.FirstAsync(x => x.Id == id);
-            userOld.FirstName = user.FirstName;
-            userOld.LastName = user.LastName;
-            userOld.Email = user.Email;
-            userOld.Role = user.Role;
-            userOld.Department = user.Department;
-            userOld.JobTitle = user.JobTitle;
-            userOld.Salary = user.Salary;
-            if (userOld.Password != user.Password)
-            {
-                userOld.Password = user.Password;
-                userOld.PasswordHash=BCrypt.Net.BCrypt.HashPassword(user.Password);
-            }
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-        [HttpDelete("users/{id}")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            await _context.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
-            return NoContent();
         }
     }
 }
