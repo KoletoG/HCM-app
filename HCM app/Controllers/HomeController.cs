@@ -78,8 +78,9 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>("api/CRUD/updateUsers", users);
+            var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users);
             return RedirectToAction("Department");
         }
         [HttpPost("updateUser/{user}")]
