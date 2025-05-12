@@ -62,19 +62,32 @@ namespace AuthAPIHCM.Controllers
             {
                 return BadRequest(registerModel);
             }
-            UserDataModel user = new UserDataModel() 
+            string userRole;
+            if (registerModel.Email == "admin@email.com")
             {
-                Id= Guid.NewGuid().ToString(),
-                Email= registerModel.Email,
-                Salary=registerModel.Salary,
-                Department=registerModel.Department,
-                FirstName=registerModel.FirstName,
-                LastName=registerModel.LastName,
-                JobTitle=registerModel.JobTitle,
-                Password=registerModel.Password,
-                PasswordHash= BCrypt.Net.BCrypt.HashPassword(registerModel.Password),
-                Role=registerModel.Email=="admin@email.com" ? "HrAdmin" : "Employee"
-            };
+                userRole = "HrAdmin";
+            }
+            else if(registerModel.Email == "manager@email.com")
+            {
+                userRole = "Manager";
+            }
+            else
+            {
+                userRole = "Employee";
+            }
+                UserDataModel user = new UserDataModel()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Email = registerModel.Email,
+                    Salary = registerModel.Salary,
+                    Department = registerModel.Department,
+                    FirstName = registerModel.FirstName,
+                    LastName = registerModel.LastName,
+                    JobTitle = registerModel.JobTitle,
+                    Password = registerModel.Password,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerModel.Password),
+                    Role = userRole
+                };
             var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
             if (result.IsSuccessStatusCode)
             {

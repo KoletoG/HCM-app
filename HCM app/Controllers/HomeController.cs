@@ -85,7 +85,7 @@ namespace HCM_app.Controllers
             var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", registerModel);
             if (result.IsSuccessStatusCode)
             {
-                return RedirectToAction("LoginMain", "Home");
+                return RedirectToAction("Login", "Home");
             }
             return Problem();
         }
