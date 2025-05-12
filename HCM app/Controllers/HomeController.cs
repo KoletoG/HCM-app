@@ -58,14 +58,29 @@ namespace HCM_app.Controllers
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}");
             return View(users);
         }
+        [HttpGet]
+        public async Task<IActionResult> AdminPanel()
+        {
+            if (!HttpContext.Session.TryGetValue("jwt", out var token))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var tokenString = Encoding.UTF8.GetString(token);
+            var secToken = handler.ReadJwtToken(tokenString);
+            if (secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value != "HrAdmin")
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+            var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
+            return View(users);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUser(List<DepartmentUpdateViewModel> users)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(users);
-            }
+            
             if (!HttpContext.Session.TryGetValue("jwt", out var token))
             {
                 return RedirectToAction("Login", "Home");
@@ -78,20 +93,36 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!ModelState.IsValid)
+            {
+                return View("Department");
+            }
             var department = secToken.Claims.First(x => x.Type == "Department").Value;
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
             var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users);
             return RedirectToAction("Department");
         }
-        [HttpPost("updateUser/{user}")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUser(DepartmentUpdateViewModel user)
+        public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users)
         {
+            if(!HttpContext.Session.TryGetValue("jwt", out var token))
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            var tokenString = Encoding.UTF8.GetString(token);
+            var secToken = handler.ReadJwtToken(tokenString);
+            var role = secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+            if (role != "HrAdmin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("Department");
+                return View("AdminPanel");
             }
-            return RedirectToAction("Department");
+            return RedirectToAction("AdminPanel");
         }
         [HttpGet]
         public IActionResult Login()

@@ -49,6 +49,12 @@
 										<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Department">Department</a>
 									</li>
 								}
+								else if (role == "HrAdmin")
+								{
+									<li class="nav-item">
+										<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdminPanel">Admin panel</a>
+									</li>
+								}
 							}
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Profile</a>
