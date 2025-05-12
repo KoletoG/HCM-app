@@ -34,47 +34,56 @@ namespace AuthAPIHCM.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
-            if (!ModelState.IsValid) 
+            try
             {
-                return BadRequest("There was a problem with the input.");
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("There was a problem with the input.");
+                }
+                var result = await _clientCRUD.GetAsync($"api/CRUD/users/email-{loginModel.Email}");
+                var user = new UserDataModel();
+                if (result.IsSuccessStatusCode)
+                {
+                    user = await result.Content.ReadFromJsonAsync<UserDataModel>();
+                }
+                else
+                {
+                    return NotFound("A user with this email doesn't exist.");
+                }
+                if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.PasswordHash))
+                {
+                    return Unauthorized("Invalid credentials");
+                }
+                var token = _authService.GenerateJwtToken(user);
+                return Ok(token);
             }
-            var result = await _clientCRUD.GetAsync($"api/CRUD/users/email-{loginModel.Email}");
-            var user = new UserDataModel();
-            if (result.IsSuccessStatusCode)
+            catch (Exception)
             {
-                user = await result.Content.ReadFromJsonAsync<UserDataModel>();
+                return Problem();
             }
-            else
-            {
-                return NotFound("A user with this email doesn't exist.");
-            }
-            if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.PasswordHash))
-            {
-                return Unauthorized("Invalid credentials");
-            }
-            var token = _authService.GenerateJwtToken(user);
-            return Ok(token);
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel registerModel)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(registerModel);
-            }
-            string userRole;
-            if (registerModel.Email == "admin@email.com")
-            {
-                userRole = "HrAdmin";
-            }
-            else if(registerModel.Email == "manager@email.com")
-            {
-                userRole = "Manager";
-            }
-            else
-            {
-                userRole = "Employee";
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(registerModel);
+                }
+                string userRole;
+                if (registerModel.Email == "admin@email.com")
+                {
+                    userRole = "HrAdmin";
+                }
+                else if (registerModel.Email == "manager@email.com")
+                {
+                    userRole = "Manager";
+                }
+                else
+                {
+                    userRole = "Employee";
+                }
                 UserDataModel user = new UserDataModel()
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -88,16 +97,20 @@ namespace AuthAPIHCM.Controllers
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerModel.Password),
                     Role = userRole
                 };
-            var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
-            if (result.IsSuccessStatusCode)
-            {
-                return NoContent();
+                var result = await _clientCRUD.PostAsJsonAsync<UserDataModel>("api/CRUD/users", user);
+                if (result.IsSuccessStatusCode)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return Problem("User not registered.");
+                }
             }
-            else
+            catch (Exception)
             {
-                return Problem("User not registered.");
+                return Problem();
             }
-
         }
     }
 }
