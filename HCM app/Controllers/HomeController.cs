@@ -76,11 +76,23 @@ namespace HCM_app.Controllers
             var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
             return View(users);
         }
+        private void SanitizeInput(List<DepartmentUpdateViewModel> viewModel)
+        {
+            foreach(var user in viewModel)
+            {
+                _htmlSanitizer.Sanitize(user.Id);
+                _htmlSanitizer.Sanitize(user.Department);
+                _htmlSanitizer.Sanitize(user.JobTitle);
+                _htmlSanitizer.Sanitize(user.Email);
+                _htmlSanitizer.Sanitize(user.FirstName);
+                _htmlSanitizer.Sanitize(user.LastName);
+                _htmlSanitizer.Sanitize(user.Role);
+            }
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUser(List<DepartmentUpdateViewModel> users)
+        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users)
         {
-            
             if (!HttpContext.Session.TryGetValue("jwt", out var token))
             {
                 return RedirectToAction("Login", "Home");
@@ -93,6 +105,7 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            SanitizeInput(users);
             if (!ModelState.IsValid)
             {
                 return View("Department");
@@ -107,6 +120,7 @@ namespace HCM_app.Controllers
             await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("Department");
         }
+        // ADD PAGING, CACHING, LIST OF ROLES WHEN UPDATING
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users)
@@ -123,6 +137,7 @@ namespace HCM_app.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            SanitizeInput(users);
             if (!ModelState.IsValid)
             {
                 return View("AdminPanel");
