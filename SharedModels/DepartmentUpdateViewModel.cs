@@ -16,5 +16,6 @@ namespace HCM_app.ViewModels
         public double? Salary { get; set; }
         public string? Department { get; set; }
         public string? Role { get; set; }
+        public bool ShouldDelete { get; set; }
     }
 }

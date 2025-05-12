@@ -123,7 +123,8 @@ namespace HCM_app.Controllers
                 return View("AdminPanel");
             }
             _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-            var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users);
+            await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/deleteUsers", users.Where(x=>x.ShouldDelete).ToList());
+            await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users.Where(x => !x.ShouldDelete).ToList());
             return RedirectToAction("AdminPanel");
         }
         [HttpGet]

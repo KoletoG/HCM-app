@@ -180,6 +180,23 @@ namespace CRUDHCM_API.Controllers
                 return Problem("Problem occured with saving data to database");
             }
         }
+        [HttpDelete("deleteUsers")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
+        public async Task<IActionResult> DeleteUsersAdmin([FromBody] List<DepartmentUpdateViewModel> users)
+        {
+            try
+            {
+                foreach (var user in users)
+                {
+                   await _context.Users.Where(x => x.Id == user.Id).ExecuteDeleteAsync();
+                }
+                return NoContent();
+            }
+            catch (DbException)
+            {
+                return Problem("Problem occured with deleting data in database");
+            }
+        }
         [HttpPatch]
         public async Task<IActionResult> PatchUser(string id, [FromBody] JsonPatchDocument<UserDataModel> patchDoc)
         {
