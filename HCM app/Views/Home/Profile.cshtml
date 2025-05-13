@@ -1,31 +1,33 @@
 ﻿@using HCM_app.ViewModels
 @model ProfileViewModel
+<div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
-<div>
-	@Html.DisplayNameFor(x => x.FirstName)
-	@Model.FirstName
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.LastName)
-	@Model.LastName
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.Email)
-	@Model.Email
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.Department)
-	@Model.Department
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.JobTitle)
-	@Model.JobTitle
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.Salary)
-	@Model.Salary
-</div>
-<div>
-	@Html.DisplayNameFor(x => x.Role)
-	@Model.Role
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.FirstName):
+		@Model.FirstName
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.LastName):
+		@Model.LastName
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.Email):
+		@Model.Email
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.Department):
+		@Model.Department
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.JobTitle):
+		@Model.JobTitle
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.Salary):
+		@Model.Salary
+	</div>
+	<div class="mb-2 fs-4 fw-bolder font-monospace">
+		@Html.DisplayNameFor(x => x.Role):
+		@Model.Role
+	</div>
 </div>
