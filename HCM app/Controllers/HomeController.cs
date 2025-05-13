@@ -32,6 +32,7 @@ namespace HCM_app.Controllers
         private readonly HttpClient _clientCRUD;
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly IMemoryCache _memoryCache;
+        private const int usersPerPage = 4; // Sets how many users should be shown every page
         public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache)
         {
             _logger = logger;
@@ -64,6 +65,8 @@ namespace HCM_app.Controllers
                 }
                 var department = secToken.Claims.First(x => x.Type == "Department").Value;
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var usersCount = await _clientCRUD.GetAsync($"api/CRUD/usersCount/department-{department}");
+
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}");
                 return View(new UsersToUpdateViewModel(users));
             }

@@ -37,7 +37,7 @@ namespace CRUDHCM_API.Controllers
             {
                 if (!_memoryCache.TryGetValue($"users", out List<UserDataModel> users))
                 {
-                     users = await _context.Users.ToListAsync();
+                     users = await _context.Users.OrderBy(x => x.FirstName).ToListAsync();
                     _memoryCache.Set($"users", users, TimeSpan.FromMinutes(5));
                 }
                 return Ok(users);
@@ -87,7 +87,7 @@ namespace CRUDHCM_API.Controllers
             {
                 if(!_memoryCache.TryGetValue($"users_{department}",out List<UserDataModel> users))
                 {
-                    users = await _context.Users.Where(x => x.Department == department).ToListAsync();
+                    users = await _context.Users.Where(x => x.Department == department).OrderBy(x=>x.FirstName).ToListAsync();
                     _memoryCache.Set($"users_{department}", users, TimeSpan.FromMinutes(15));
                 }
                 if (users.Count == 0)
@@ -178,7 +178,6 @@ namespace CRUDHCM_API.Controllers
             {
                 return Problem();
             }
-
         }
         [HttpPatch("updateUsers/{department}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
