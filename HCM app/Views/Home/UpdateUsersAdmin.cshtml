@@ -55,13 +55,13 @@
 	}
 	else
 	{
-		int pageNext = Model.Page + 1;
-		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pageNext" method="get">
-			Next page
-		</a>
 		int pagePrevious = Model.Page - 1;
 		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
 			Previous Page
+		</a>
+		int pageNext = Model.Page + 1;
+		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pageNext" method="get">
+			Next page
 		</a>
 	}
 </div>

@@ -40,15 +40,27 @@
 	</form>
 	@if (Model.IsFirstPage)
 	{
-		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Next page</button>
+		int pageNext = Model.Page + 1;
+		<a asp-action="UpdateUsersManager" asp-controller="Home" asp-route-page="@pageNext" method="get">
+			Next page
+		</a>
 	}
 	else if (Model.IsLastPage)
 	{
-		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Previous page</button>
+		int pagePrevious = Model.Page - 1;
+		<a asp-action="UpdateUsersManager" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
+			Previous Page
+		</a>
 	}
 	else
 	{
-		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Next page</button>
-		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Previous page</button>
+		int pagePrevious = Model.Page - 1;
+		<a asp-action="UpdateUsersManager" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
+			Previous Page
+		</a>
+		int pageNext = Model.Page + 1;
+		<a asp-action="UpdateUsersManager" asp-controller="Home" asp-route-page="@pageNext" method="get">
+			Next page
+		</a>
 	}
 </div>
