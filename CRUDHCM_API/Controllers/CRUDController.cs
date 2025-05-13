@@ -35,7 +35,11 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-                var users = await _context.Users.ToListAsync();
+                if (!_memoryCache.TryGetValue($"users", out List<UserDataModel> users))
+                {
+                     users = await _context.Users.ToListAsync();
+                    _memoryCache.Set($"users", users, TimeSpan.FromMinutes(5));
+                }
                 return Ok(users);
             }
             catch (DbException)
@@ -56,7 +60,7 @@ namespace CRUDHCM_API.Controllers
                 if(!_memoryCache.TryGetValue($"users_{department}",out List<UserDataModel> users))
                 {
                     users = await _context.Users.Where(x => x.Department == department).ToListAsync();
-                    _memoryCache.Set($"users_{department}", users, TimeSpan.FromMinutes(5));
+                    _memoryCache.Set($"users_{department}", users, TimeSpan.FromMinutes(15));
                 }
                 if (users.Count == 0)
                 {
@@ -193,6 +197,7 @@ namespace CRUDHCM_API.Controllers
                     }
                 }
                 await _context.SaveChangesAsync();
+                _memoryCache.Remove($"users_{department}");
                 return NoContent();
             }
             catch (DbException)
