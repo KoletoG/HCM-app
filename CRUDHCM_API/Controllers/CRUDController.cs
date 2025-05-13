@@ -35,14 +35,13 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-                if (!_memoryCache.TryGetValue($"users", out List<UserDataModel> users))
-                {
-                     users = await _context.Users.OrderBy(x => x.FirstName).ToListAsync();
-                    _memoryCache.Set($"users", users, TimeSpan.FromMinutes(5));
-                }
                 int usersToSkip = (page - 1) * Constants.usersPerPage;
-                var usersForPage = users.Skip(usersToSkip).Take(Constants.usersPerPage).ToList();
-                return Ok(usersForPage);
+                var users = await _context.Users.AsNoTracking()
+                    .OrderBy(x => x.FirstName)
+                    .Skip(usersToSkip)
+                    .Take(Constants.usersPerPage)
+                    .ToListAsync(); 
+                return Ok(users);
             }
             catch (DbException)
             {
@@ -87,18 +86,18 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-                if(!_memoryCache.TryGetValue($"users_{department}",out List<UserDataModel> users))
-                {
-                    users = await _context.Users.Where(x => x.Department == department).OrderBy(x=>x.FirstName).ToListAsync();
-                    _memoryCache.Set($"users_{department}", users, TimeSpan.FromMinutes(15));
-                }
+                int usersToSkip = (page - 1) * Constants.usersPerPage;
+                var users = await _context.Users.AsNoTracking()
+                    .Where(x => x.Department == department)
+                    .OrderBy(x => x.FirstName)
+                    .Skip(usersToSkip)
+                    .Take(Constants.usersPerPage)
+                    .ToListAsync();
                 if (users.Count == 0)
                 {
                     return NotFound("Users with the specified department are non-existent");
                 }
-                int usersToSkip = (page-1) * Constants.usersPerPage;
-                var usersForPage= users.Skip(usersToSkip).Take(Constants.usersPerPage).ToList();
-                return Ok(usersForPage);
+                return Ok(users);
             }
             catch (DbException)
             {
@@ -109,7 +108,6 @@ namespace CRUDHCM_API.Controllers
                 return Problem();
             }
         }
-
         [HttpGet("users/id-{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetUserById(string id)
@@ -164,10 +162,10 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-                _memoryCache.Remove("users");
-                _memoryCache.Remove($"users_{user.Department}");
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
+                _memoryCache.Remove($"users_{user.Department}");
+                _memoryCache.Remove($"users_dic");
                 return CreatedAtAction("AddUser", user);
             }
             catch (DbUpdateException)
@@ -190,78 +188,15 @@ namespace CRUDHCM_API.Controllers
             try
             {
                 department = HttpUtility.UrlDecode(department);
-                var usersFromDB = await _context.Users.Where(x => x.Department == department).ToDictionaryAsync(x => x.Id);
+                if (!_memoryCache.TryGetValue($"users_{department}",out Dictionary<string,UserDataModel> usersFromDB))
+                {
+                    usersFromDB = await _context.Users.Where(x => x.Department == department).ToDictionaryAsync(x => x.Id);
+                    _memoryCache.Set($"users_{department}", usersFromDB,TimeSpan.FromMinutes(30));
+                }
                 if (usersFromDB.Count < 1)
                 {
                     return BadRequest("Department is invalid");
                 }
-                foreach (var user in users)
-                {
-                    if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
-                    {
-                        bool hasChange = false;
-                        if (user.Salary != default)
-                        {
-                            userFromDB.Salary = user.Salary ?? userFromDB.Salary;
-                            hasChange = true;
-                        }
-                        if (user.Email != null)
-                        {
-                            userFromDB.Email = user.Email;
-                            hasChange = true;
-                        }
-                        if (user.FirstName != null)
-                        {
-                            userFromDB.FirstName = user.FirstName;
-                            hasChange = true;
-                        }
-                        if (user.LastName != null)
-                        {
-                            userFromDB.LastName = user.LastName;
-                            hasChange = true;
-                        }
-                        if (user.JobTitle != null)
-                        {
-                            userFromDB.JobTitle = user.JobTitle;
-                            hasChange = true;
-                        }
-                        if (user.Department != null)
-                        {
-                            userFromDB.Department = user.Department;
-                            hasChange = true;
-                        }
-                        if (user.Role != null)
-                        {
-                            userFromDB.Role = user.Role;
-                            hasChange = true;
-                        }
-                        if (hasChange)
-                        {
-                            _memoryCache.Remove($"users_{user.Department}");
-                            _memoryCache.Remove("users");
-                        }
-                    }
-                }
-                await _context.SaveChangesAsync();
-                _memoryCache.Remove($"users_{department}");
-                return NoContent();
-            }
-            catch (DbException)
-            {
-                return Problem("Problem occured with saving data to database");
-            }
-            catch (Exception)
-            {
-                return Problem();
-            }
-        }
-        [HttpPatch("users")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
-        public async Task<IActionResult> UpdateUsers([FromBody] List<DepartmentUpdateViewModel> users)
-        {
-            try
-            {
-                var usersFromDB = await _context.Users.ToDictionaryAsync(x => x.Id);
                 foreach (var user in users)
                 {
                     if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
@@ -304,8 +239,77 @@ namespace CRUDHCM_API.Controllers
                         }
                         if (hasChange)
                         {
+                            _memoryCache.Remove($"users_{department}");
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbException)
+            {
+                return Problem("Problem occured with saving data to database");
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
+        }
+        [HttpPatch("users")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
+        public async Task<IActionResult> UpdateUsers([FromBody] List<DepartmentUpdateViewModel> users)
+        {
+            try
+            {
+                if (!_memoryCache.TryGetValue($"users_dic", out Dictionary<string, UserDataModel> usersFromDB))
+                {
+                    usersFromDB = await _context.Users.ToDictionaryAsync(x => x.Id);
+                    _memoryCache.Set($"users_dic", usersFromDB, TimeSpan.FromMinutes(30));
+                }
+                foreach (var user in users)
+                {
+                    if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
+                    {
+                        bool hasChange = false;
+                        if (user.Salary != default)
+                        {
+                            userFromDB.Salary = user.Salary ?? userFromDB.Salary;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.Email))
+                        {
+                            userFromDB.Email = user.Email;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.FirstName))
+                        {
+                            userFromDB.FirstName = user.FirstName;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.LastName))
+                        {
+                            userFromDB.LastName = user.LastName;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.JobTitle))
+                        {
+                            userFromDB.JobTitle = user.JobTitle;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.Department))
+                        {
+                            userFromDB.Department = user.Department;
+                            hasChange = true;
+                        }
+                        if (!string.IsNullOrEmpty(user.Role))
+                        {
+                            userFromDB.Role = user.Role;
+                            hasChange = true;
+                        }
+                        if (hasChange)
+                        {
+                            _memoryCache.Remove("users_dic");
                             _memoryCache.Remove($"users_{user.Department}");
-                            _memoryCache.Remove("users");
                         }
                     }
                 }
@@ -335,9 +339,9 @@ namespace CRUDHCM_API.Controllers
                     return NotFound("There is no user with such Id");
                 }
                 _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-                _memoryCache.Remove("users");
+                _memoryCache.Remove("users_dic");
                 _memoryCache.Remove($"users_{user.Department}");
+                await _context.SaveChangesAsync();
                 return NoContent();
             }
             catch (DbException)
@@ -371,7 +375,7 @@ namespace CRUDHCM_API.Controllers
                     return Unauthorized("You cannot delete people from other departments.");
                 }
                 await _context.SaveChangesAsync();
-                _memoryCache.Remove("users");
+                _memoryCache.Remove("users_dic");
                 _memoryCache.Remove($"users_{department}");
                 return NoContent();
             }
