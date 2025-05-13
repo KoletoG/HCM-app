@@ -132,6 +132,8 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
+                _memoryCache.Remove("users");
+                _memoryCache.Remove($"users_{user.Department}");
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("AddUser", user);
@@ -166,33 +168,46 @@ namespace CRUDHCM_API.Controllers
                 {
                     if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB))
                     {
+                        bool hasChange = false;
                         if (user.Salary != default)
                         {
                             userFromDB.Salary = user.Salary ?? userFromDB.Salary;
+                            hasChange = true;
                         }
                         if (user.Email != null)
                         {
                             userFromDB.Email = user.Email;
+                            hasChange = true;
                         }
                         if (user.FirstName != null)
                         {
                             userFromDB.FirstName = user.FirstName;
+                            hasChange = true;
                         }
                         if (user.LastName != null)
                         {
                             userFromDB.LastName = user.LastName;
+                            hasChange = true;
                         }
                         if (user.JobTitle != null)
                         {
                             userFromDB.JobTitle = user.JobTitle;
+                            hasChange = true;
                         }
                         if (user.Department != null)
                         {
                             userFromDB.Department = user.Department;
+                            hasChange = true;
                         }
                         if (user.Role != null)
                         {
                             userFromDB.Role = user.Role;
+                            hasChange = true;
+                        }
+                        if (hasChange)
+                        {
+                            _memoryCache.Remove($"users_{user.Department}");
+                            _memoryCache.Remove("users");
                         }
                     }
                 }
@@ -220,33 +235,46 @@ namespace CRUDHCM_API.Controllers
                 {
                     if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
                     {
+                        bool hasChange = false;
                         if (user.Salary != default)
                         {
                             userFromDB.Salary = user.Salary ?? userFromDB.Salary;
+                            hasChange = true;
                         }
                         if (user.Email != null)
                         {
                             userFromDB.Email = user.Email;
+                            hasChange = true;
                         }
                         if (user.FirstName != null)
                         {
                             userFromDB.FirstName = user.FirstName;
+                            hasChange = true;
                         }
                         if (user.LastName != null)
                         {
                             userFromDB.LastName = user.LastName;
+                            hasChange = true;
                         }
                         if (user.JobTitle != null)
                         {
                             userFromDB.JobTitle = user.JobTitle;
+                            hasChange = true;
                         }
                         if (user.Department != null)
                         {
                             userFromDB.Department = user.Department;
+                            hasChange = true;
                         }
                         if (user.Role != null)
                         {
                             userFromDB.Role = user.Role;
+                            hasChange = true;
+                        }
+                        if (hasChange)
+                        {
+                            _memoryCache.Remove($"users_{user.Department}");
+                            _memoryCache.Remove("users");
                         }
                     }
                 }
@@ -277,6 +305,8 @@ namespace CRUDHCM_API.Controllers
                 }
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
+                _memoryCache.Remove("users");
+                _memoryCache.Remove($"users_{user.Department}");
                 return NoContent();
             }
             catch (DbException)
@@ -310,6 +340,8 @@ namespace CRUDHCM_API.Controllers
                     return Unauthorized("You cannot delete people from other departments.");
                 }
                 await _context.SaveChangesAsync();
+                _memoryCache.Remove("users");
+                _memoryCache.Remove($"users_{department}");
                 return NoContent();
             }
             catch (DbException)
