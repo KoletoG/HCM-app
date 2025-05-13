@@ -41,7 +41,7 @@ namespace HCM_app.Controllers
             _memoryCache = memoryCache;
             _htmlSanitizer.AllowedTags.Clear();
         }
-        [ResponseCache(Duration =3600,Location =ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Index()
         {
             return View();
@@ -333,22 +333,18 @@ namespace HCM_app.Controllers
                 var tokenString = Encoding.UTF8.GetString(token);
                 var secToken = handler.ReadJwtToken(tokenString);
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
-                if(!_memoryCache.TryGetValue($"profile_{id}",out var profileViewModel))
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
+                var profileViewModel = new ProfileViewModel()
                 {
-                    _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                    var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
-                    profileViewModel = new ProfileViewModel()
-                    {
-                        Email = user.Email,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        Department = user.Department,
-                        JobTitle = user.JobTitle,
-                        Role = user.Role,
-                        Salary = user.Salary
-                    };
-                    _memoryCache.Set($"profile_{id}", profileViewModel,TimeSpan.FromMinutes(3));
-                }
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Department = user.Department,
+                    JobTitle = user.JobTitle,
+                    Role = user.Role,
+                    Salary = user.Salary
+                };
                 return View(profileViewModel);
             }
             catch (Exception)

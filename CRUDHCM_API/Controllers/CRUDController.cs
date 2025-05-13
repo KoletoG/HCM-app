@@ -51,9 +51,37 @@ namespace CRUDHCM_API.Controllers
                 return Problem();
             }
         }
-        [HttpGet("users/department-{department}")]
+        [HttpGet("usersCount/department-{department}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Roles ="Manager")]
+        public async Task<IActionResult> GetUsersCountManager(string department)
+        {
+            try
+            {
+                var count = await _context.Users.Where(x => x.Department == department).CountAsync();
+                return Ok(count);
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
+        }
+        [HttpGet("usersCount")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
+        public async Task<IActionResult> GetUsersCountAdmin()
+        {
+            try
+            {
+                var count = await _context.Users.CountAsync();
+                return Ok(count);
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
+        }
+        [HttpGet("users/department-{department}/page-{page}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
-        public async Task<IActionResult> GetAllUsers(string department)
+        public async Task<IActionResult> GetAllUsers(string department, string page)
         {
             try
             {
