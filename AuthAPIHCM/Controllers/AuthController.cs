@@ -20,15 +20,16 @@ namespace AuthAPIHCM.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
+        private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
         private readonly HttpClient _clientCRUD;
-        public AuthController(ApplicationDbContext context, IAuthService authService)
+        public AuthController(ApplicationDbContext context, IAuthService authService, ILogger<AuthController> logger)
         {
             _context = context;
             _authService = authService;
             _clientCRUD = new HttpClient();
             _clientCRUD.BaseAddress = new Uri("https://localhost:7261/");
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -57,8 +58,9 @@ namespace AuthAPIHCM.Controllers
                 var token = _authService.GenerateJwtToken(user);
                 return Ok(token);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(Login)}");
                 return Problem();
             }
         }
@@ -107,8 +109,9 @@ namespace AuthAPIHCM.Controllers
                     return Problem("User not registered.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(Register)}");
                 return Problem();
             }
         }

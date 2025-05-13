@@ -23,9 +23,11 @@ namespace CRUDHCM_API.Controllers
     public class CRUDController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public CRUDController(ApplicationDbContext context)
+        private readonly ILogger<CRUDController> _logger;
+        public CRUDController(ApplicationDbContext context, ILogger<CRUDController> logger)
         {
             _context = context;
+            _logger = logger;
         }
         [HttpGet("users/page-{page}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
@@ -41,12 +43,14 @@ namespace CRUDHCM_API.Controllers
                     .ToListAsync();
                 return Ok(users);
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetAllUsers)}");
                 return Problem("There was a problem with the database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetAllUsers)}");
                 return Problem();
             }
         }
@@ -59,8 +63,9 @@ namespace CRUDHCM_API.Controllers
                 var count = await _context.Users.Where(x => x.Department == department).CountAsync();
                 return Ok(count);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUsersCountManager)}");
                 return Problem();
             }
         }
@@ -73,8 +78,9 @@ namespace CRUDHCM_API.Controllers
                 var count = await _context.Users.CountAsync();
                 return Ok(count);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUsersCountAdmin)}");
                 return Problem();
             }
         }
@@ -97,12 +103,14 @@ namespace CRUDHCM_API.Controllers
                 }
                 return Ok(users);
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetAllUsers)}");
                 return Problem("There was a problem with the database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetAllUsers)}");
                 return Problem();
             }
         }
@@ -122,12 +130,14 @@ namespace CRUDHCM_API.Controllers
                     return NotFound();
                 }
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUserById)}");
                 return Problem("There was a problem with the database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUserById)}");
                 return Problem();
             }
         }
@@ -146,12 +156,14 @@ namespace CRUDHCM_API.Controllers
                     return NotFound();
                 }
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUserByEmail)}");
                 return Problem("There was a problem with the database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(GetUserByEmail)}");
                 return Problem();
             }
         }
@@ -166,16 +178,19 @@ namespace CRUDHCM_API.Controllers
 
                 return CreatedAtAction("AddUser", user);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(AddUser)}");
                 return BadRequest("Invalid user data");
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(AddUser)}");
                 return Problem("Problem occured with saving data to database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(AddUser)}");
                 return Problem();
             }
         }
@@ -228,12 +243,14 @@ namespace CRUDHCM_API.Controllers
                 await _context.SaveChangesAsync();
                 return NoContent();
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(UpdateUsers)}");
                 return Problem("Problem occured with saving data to database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(UpdateUsers)}");
                 return Problem();
             }
         }
@@ -281,12 +298,14 @@ namespace CRUDHCM_API.Controllers
                 await _context.SaveChangesAsync();
                 return NoContent();
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(UpdateUsers)}");
                 return Problem("Problem occured with saving data to database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(UpdateUsers)}");
                 return Problem();
             }
         }
@@ -309,12 +328,14 @@ namespace CRUDHCM_API.Controllers
                 await _context.SaveChangesAsync();
                 return NoContent();
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(DeleteUser)}");
                 return Problem("Problem occured with saving data to database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(DeleteUser)}");
                 return Problem();
             }
         }
@@ -344,12 +365,14 @@ namespace CRUDHCM_API.Controllers
 
                 return NoContent();
             }
-            catch (DbException)
+            catch (DbException ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(DeleteUser)}");
                 return Problem("Problem occured with saving data to database");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"There was an error in {nameof(DeleteUser)}");
                 return Problem();
             }
         }
