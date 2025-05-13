@@ -166,7 +166,7 @@ namespace CRUDHCM_API.Controllers
                 }
                 foreach (var user in users)
                 {
-                    if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB))
+                    if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
                     {
                         bool hasChange = false;
                         if (user.Salary != default)

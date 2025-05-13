@@ -41,6 +41,7 @@ namespace HCM_app.Controllers
             _memoryCache = memoryCache;
             _htmlSanitizer.AllowedTags.Clear();
         }
+        [ResponseCache(Duration =3600,Location =ResponseCacheLocation.Any)]
         public async Task<IActionResult> Index()
         {
             return View();
