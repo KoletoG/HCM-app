@@ -42,26 +42,31 @@
 	@if (Model.IsFirstPage)
 	{
 		int pageNext = Model.Page + 1;
-		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pageNext" method="get">
-			Next page
+		<a asp-action="UpdateUsersAdmin" class="btn btn-primary" asp-controller="Home" asp-route-page="@pageNext" method="get">
+			&raquo; Next page
 		</a>
 	}
 	else if (Model.IsLastPage)
 	{
 		int pagePrevious = Model.Page - 1;
-		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
-			Previous Page
+		<a asp-action="UpdateUsersAdmin" class="btn btn-primary" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
+			&laquo; Previous Page
 		</a>
+
 	}
 	else
 	{
-		int pagePrevious = Model.Page - 1;
-		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
-			Previous Page
-		</a>
-		int pageNext = Model.Page + 1;
-		<a asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@pageNext" method="get">
-			Next page
-		</a>
+		<div class="d-flex justify-content-between my-3">
+			@{
+				int pagePrevious = Model.Page - 1;
+				<a asp-action="UpdateUsersAdmin" class="btn btn-primary" asp-controller="Home" asp-route-page="@pagePrevious" method="get">
+					&laquo; Previous Page
+				</a>
+				int pageNext = Model.Page + 1;
+				<a asp-action="UpdateUsersAdmin" class="btn btn-primary" asp-controller="Home" asp-route-page="@pageNext" method="get">
+					&raquo; Next page
+				</a>
+			}
+		</div>
 	}
 </div>
