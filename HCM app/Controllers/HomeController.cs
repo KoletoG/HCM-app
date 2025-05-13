@@ -45,10 +45,18 @@ namespace HCM_app.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error has happened in {nameof(Index)}");
+                return View("Error", new ErrorViewModel());
+            }
         }
         [HttpGet]
-        public async Task<IActionResult> UpdateUsersManager(int page=1)
+        public async Task<IActionResult> UpdateUsersManager(int page = 1)
         {
             try
             {
@@ -65,7 +73,7 @@ namespace HCM_app.Controllers
                 }
                 var department = secToken.Claims.First(x => x.Type == "Department").Value;
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}"); 
+                var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}");
                 int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
                 bool isLastPage = false;
                 bool isFirstPage = false;
@@ -80,15 +88,16 @@ namespace HCM_app.Controllers
                     isFirstPage = true;
                 }
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}/page-{page}");
-                return View(new UsersToUpdateViewModel(users,isLastPage,isFirstPage,page));
+                return View(new UsersToUpdateViewModel(users, isLastPage, isFirstPage, page));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(UpdateUsersManager)}"); 
+                return View("Error",new ErrorViewModel());
             }
         }
         [HttpGet]
-        public async Task<IActionResult> UpdateUsersAdmin(int page=1)
+        public async Task<IActionResult> UpdateUsersAdmin(int page = 1)
         {
             try
             {
@@ -103,7 +112,7 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount");
                 int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
                 bool isLastPage = false;
@@ -119,11 +128,12 @@ namespace HCM_app.Controllers
                     isFirstPage = true;
                 }
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
-                return View(new UsersToUpdateViewModel(users,isLastPage,isFirstPage,page));
+                return View(new UsersToUpdateViewModel(users, isLastPage, isFirstPage, page));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(UpdateUsersAdmin)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         private void SanitizeInput(List<DepartmentUpdateViewModel> viewModel)
@@ -147,7 +157,7 @@ namespace HCM_app.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users,int page, bool isLastPage, bool isFirstPage)
+        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
         {
             try
             {
@@ -178,7 +188,7 @@ namespace HCM_app.Controllers
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors,isLastPage,isFirstPage,page));
+                    return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
                 var department = secToken.Claims.First(x => x.Type == "Department").Value;
@@ -193,11 +203,12 @@ namespace HCM_app.Controllers
                 }
                 int pageToReturn = page;
                 var res = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
-                return RedirectToAction("UpdateUsersManager", new {page=pageToReturn});
+                return RedirectToAction("UpdateUsersManager", new { page = pageToReturn });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(UpdateUsersManager)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         private void ChangeRoleNaming(List<DepartmentUpdateViewModel> users)
@@ -278,7 +289,7 @@ namespace HCM_app.Controllers
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors,isLastPage,isFirstPage,page));
+                    return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
@@ -290,19 +301,28 @@ namespace HCM_app.Controllers
                     }
                 }
                 int pageToReturn = page;
-                var usersToSend = users.Where(x => !x.ShouldDelete).ToList(); 
+                var usersToSend = users.Where(x => !x.ShouldDelete).ToList();
                 var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/users", usersToSend);
-                return RedirectToAction("UpdateUsersAdmin", "Home", new { page= pageToReturn });
+                return RedirectToAction("UpdateUsersAdmin", "Home", new { page = pageToReturn });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(UpdateUsersAdmin)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         [HttpGet]
         public IActionResult Login()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error has happened in {nameof(Profile)}");
+                return View("Error", new ErrorViewModel());
+            }
         }
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -325,9 +345,10 @@ namespace HCM_app.Controllers
                 }
                 return View();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(Login)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         [HttpPost]
@@ -347,9 +368,10 @@ namespace HCM_app.Controllers
                 }
                 return Problem();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(Register)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         [HttpGet]
@@ -379,15 +401,24 @@ namespace HCM_app.Controllers
                 };
                 return View(profileViewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return View("Index");
+                _logger.LogError(ex, $"An error has happened in {nameof(Profile)}");
+                return View("Error", new ErrorViewModel());
             }
         }
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error has happened in {nameof(Profile)}");
+                return View("Error", new ErrorViewModel());
+            }
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
