@@ -332,19 +332,22 @@ namespace HCM_app.Controllers
                 var tokenString = Encoding.UTF8.GetString(token);
                 var secToken = handler.ReadJwtToken(tokenString);
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
-                
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
-                ProfileViewModel profileViewModel = new ProfileViewModel()
+                if(!_memoryCache.TryGetValue($"profile_{id}",out var profileViewModel))
                 {
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Department = user.Department,
-                    JobTitle = user.JobTitle,
-                    Role = user.Role,
-                    Salary = user.Salary
-                };
+                    _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
+                    profileViewModel = new ProfileViewModel()
+                    {
+                        Email = user.Email,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Department = user.Department,
+                        JobTitle = user.JobTitle,
+                        Role = user.Role,
+                        Salary = user.Salary
+                    };
+                    _memoryCache.Set($"profile_{id}", profileViewModel,TimeSpan.FromMinutes(3));
+                }
                 return View(profileViewModel);
             }
             catch (Exception)

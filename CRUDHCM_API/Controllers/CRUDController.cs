@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication;
 using HCM_app.ViewModels;
 using System.Web;
+using Microsoft.Extensions.Caching.Memory;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
@@ -22,9 +23,11 @@ namespace CRUDHCM_API.Controllers
     public class CRUDController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public CRUDController(ApplicationDbContext context)
+        private readonly IMemoryCache _memoryCache;
+        public CRUDController(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
         }
         [HttpGet("users")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
@@ -50,7 +53,11 @@ namespace CRUDHCM_API.Controllers
         {
             try
             {
-                var users = await _context.Users.Where(x => x.Department == department).ToListAsync();
+                if(!_memoryCache.TryGetValue($"users_{department}",out List<UserDataModel> users))
+                {
+                    users = await _context.Users.Where(x => x.Department == department).ToListAsync();
+                    _memoryCache.Set($"users_{department}", users, TimeSpan.FromMinutes(5));
+                }
                 if (users.Count == 0)
                 {
                     return NotFound("Users with the specified department are non-existent");
