@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -30,12 +31,14 @@ namespace HCM_app.Controllers
         private readonly HttpClient _clientAuth;
         private readonly HttpClient _clientCRUD;
         private readonly IHtmlSanitizer _htmlSanitizer;
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer)
+        private readonly IMemoryCache _memoryCache;
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache)
         {
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
             _htmlSanitizer = htmlSanitizer;
+            _memoryCache = memoryCache;
             _htmlSanitizer.AllowedTags.Clear();
         }
         public async Task<IActionResult> Index()
@@ -329,6 +332,7 @@ namespace HCM_app.Controllers
                 var tokenString = Encoding.UTF8.GetString(token);
                 var secToken = handler.ReadJwtToken(tokenString);
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
+                
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
                 var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
                 ProfileViewModel profileViewModel = new ProfileViewModel()
