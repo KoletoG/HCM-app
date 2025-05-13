@@ -12,14 +12,23 @@ namespace SharedModels
         public List<UserDataModel> Users { get; set; }
         public List<string>? Errors { get; set; }
 
-        public UsersToUpdateViewModel(List<UserDataModel> users) 
+        public bool IsLastPage { get; set; }
+        public bool IsFirstPage { get; set; }
+        public int Page {  get; set; }
+        public UsersToUpdateViewModel(List<UserDataModel> users, bool isLastPage, bool isFirstPage, int page) 
         {
             Users = users;
+            IsFirstPage = isFirstPage;
+            IsLastPage = isLastPage;
+            Page = page;
         }
-        public UsersToUpdateViewModel(List<UserDataModel> users,List<string> errors)
+        public UsersToUpdateViewModel(List<UserDataModel> users,List<string> errors, bool isLastPage, bool isFirstPage,int page)
         {
             Users = users;
             Errors = errors;
+            IsFirstPage = isFirstPage;
+            IsLastPage = isLastPage;
+            Page = page;
         }
     }
 }

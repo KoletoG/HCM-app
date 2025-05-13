@@ -10,7 +10,7 @@
 }
 <div class="mb-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
-	<form asp-action="UpdateUsersManager" asp-controller="Home" method="post">
+	<form asp-action="UpdateUsersManager" asp-controller="Home" asp-route-page="@Model.Page" asp-route-isFirstPage="@Model.IsFirstPage" asp-route-isLastPage="@Model.IsLastPage" method="post">
 		@Html.AntiForgeryToken()
 		@for (int i = 0; i < Model.Users.Count; i++)
 		{
@@ -38,4 +38,17 @@
 		}
 		<button type="submit">Update users</button>
 	</form>
+	@if (Model.IsFirstPage)
+	{
+		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Next page</button>
+	}
+	else if (Model.IsLastPage)
+	{
+		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Previous page</button>
+	}
+	else
+	{
+		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Next page</button>
+		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-sm">Previous page</button>
+	}
 </div>

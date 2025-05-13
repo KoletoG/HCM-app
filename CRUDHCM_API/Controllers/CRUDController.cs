@@ -29,9 +29,9 @@ namespace CRUDHCM_API.Controllers
             _context = context;
             _memoryCache = memoryCache;
         }
-        [HttpGet("users")]
+        [HttpGet("users/page-{page}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(int page)
         {
             try
             {
@@ -40,7 +40,9 @@ namespace CRUDHCM_API.Controllers
                      users = await _context.Users.OrderBy(x => x.FirstName).ToListAsync();
                     _memoryCache.Set($"users", users, TimeSpan.FromMinutes(5));
                 }
-                return Ok(users);
+                int usersToSkip = (page - 1) * Constants.usersPerPage;
+                var usersForPage = users.Skip(usersToSkip).Take(Constants.usersPerPage).ToList();
+                return Ok(usersForPage);
             }
             catch (DbException)
             {
@@ -81,7 +83,7 @@ namespace CRUDHCM_API.Controllers
         }
         [HttpGet("users/department-{department}/page-{page}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
-        public async Task<IActionResult> GetAllUsers(string department, string page)
+        public async Task<IActionResult> GetAllUsers(string department, int page)
         {
             try
             {
@@ -94,7 +96,9 @@ namespace CRUDHCM_API.Controllers
                 {
                     return NotFound("Users with the specified department are non-existent");
                 }
-                return Ok(users);
+                int usersToSkip = (page-1) * Constants.usersPerPage;
+                var usersForPage= users.Skip(usersToSkip).Take(Constants.usersPerPage).ToList();
+                return Ok(usersForPage);
             }
             catch (DbException)
             {

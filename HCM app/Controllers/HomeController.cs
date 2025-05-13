@@ -32,7 +32,6 @@ namespace HCM_app.Controllers
         private readonly HttpClient _clientCRUD;
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly IMemoryCache _memoryCache;
-        private const int usersPerPage = 4; // Sets how many users should be shown every page
         public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache)
         {
             _logger = logger;
@@ -42,13 +41,12 @@ namespace HCM_app.Controllers
             _memoryCache = memoryCache;
             _htmlSanitizer.AllowedTags.Clear();
         }
-        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> Index()
         {
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> UpdateUsersManager()
+        public async Task<IActionResult> UpdateUsersManager(int page=1)
         {
             try
             {
@@ -65,10 +63,22 @@ namespace HCM_app.Controllers
                 }
                 var department = secToken.Claims.First(x => x.Type == "Department").Value;
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                var usersCount = await _clientCRUD.GetAsync($"api/CRUD/usersCount/department-{department}");
-
-                var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}");
-                return View(new UsersToUpdateViewModel(users));
+                var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}"); 
+                int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
+                bool isLastPage = false;
+                bool isFirstPage = false;
+                if (page >= pagesCount)
+                {
+                    page = pagesCount;
+                    isLastPage = true;
+                }
+                else if (page <= 1)
+                {
+                    page = 1;
+                    isFirstPage = true;
+                }
+                var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}/page-{page}");
+                return View(new UsersToUpdateViewModel(users,isLastPage,isFirstPage,page));
             }
             catch (Exception)
             {
@@ -76,7 +86,7 @@ namespace HCM_app.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> UpdateUsersAdmin()
+        public async Task<IActionResult> UpdateUsersAdmin(int page=1)
         {
             try
             {
@@ -91,9 +101,23 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
-                return View(new UsersToUpdateViewModel(users));
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString); 
+                var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount");
+                int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
+                bool isLastPage = false;
+                bool isFirstPage = false;
+                if (page >= pagesCount)
+                {
+                    page = pagesCount;
+                    isLastPage = true;
+                }
+                else if (page <= 1)
+                {
+                    page = 1;
+                    isFirstPage = true;
+                }
+                var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
+                return View(new UsersToUpdateViewModel(users,isLastPage,isFirstPage,page));
             }
             catch (Exception)
             {
@@ -121,7 +145,7 @@ namespace HCM_app.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users)
+        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users,int page, bool isLastPage, bool isFirstPage)
         {
             try
             {
@@ -152,7 +176,7 @@ namespace HCM_app.Controllers
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors));
+                    return View(new UsersToUpdateViewModel(usersForOutput, errors,isLastPage,isFirstPage,page));
                 }
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
                 var department = secToken.Claims.First(x => x.Type == "Department").Value;
@@ -220,7 +244,7 @@ namespace HCM_app.Controllers
         // ADD PAGING, CACHING, LIST OF ROLES WHEN UPDATING
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users)
+        public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
         {
             try
             {
@@ -251,7 +275,7 @@ namespace HCM_app.Controllers
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors));
+                    return View(new UsersToUpdateViewModel(usersForOutput, errors,isLastPage,isFirstPage,page));
                 }
                 var id = secToken.Claims.First(x => x.Type == "sub").Value;
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
