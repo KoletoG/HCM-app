@@ -1,18 +1,23 @@
 ﻿@using SharedModels
 @model LoginViewModel
+<div class="mb-5  container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
+
 <form asp-action="Login" asp-controller="Home" method="post">
 	@Html.AntiForgeryToken()
-	<div>
-		@Html.DisplayNameFor(m => m.Email)
-		<input asp-for="Email">
+		<div class ="mb-3">
+			<p class="font-monospace fs-5 fw-bolder">
+			@Html.DisplayNameFor(m => m.Email)
+		</p>
+			<input asp-for="Email" class="form-control">
 		<span asp-validation-for="Email" class="text-danger"></span>
 	</div>
-	<div>
-		@Html.DisplayNameFor(m => m.Password)
-		<input asp-for="Password">
+		<div class="mb-3">
+			<p class="font-monospace fs-5 fw-bolder">@Html.DisplayNameFor(m => m.Password)</p>
+			<input asp-for="Password" class="form-control">
 		<span asp-validation-for="Password" class="text-danger"></span>
 	</div>
-	<div>
-		<button type="submit">Log in</button>
+		<div class="mb-3">
+		<button type="submit" class="btn btn-primary mb-3 font-monospace btn-lg">Log in</button>
 	</div>
-</form> 
+	</form>
+</div>
