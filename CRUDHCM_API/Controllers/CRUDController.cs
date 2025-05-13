@@ -255,7 +255,7 @@ namespace CRUDHCM_API.Controllers
                 return Problem();
             }
         }
-        [HttpPatch("updateUsersAdmin")]
+        [HttpPatch("users")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
         public async Task<IActionResult> UpdateUsers([FromBody] List<DepartmentUpdateViewModel> users)
         {
@@ -272,32 +272,32 @@ namespace CRUDHCM_API.Controllers
                             userFromDB.Salary = user.Salary ?? userFromDB.Salary;
                             hasChange = true;
                         }
-                        if (user.Email != null)
+                        if (!string.IsNullOrEmpty(user.Email))
                         {
                             userFromDB.Email = user.Email;
                             hasChange = true;
                         }
-                        if (user.FirstName != null)
+                        if (!string.IsNullOrEmpty(user.FirstName))
                         {
                             userFromDB.FirstName = user.FirstName;
                             hasChange = true;
                         }
-                        if (user.LastName != null)
+                        if (!string.IsNullOrEmpty(user.LastName))
                         {
                             userFromDB.LastName = user.LastName;
                             hasChange = true;
                         }
-                        if (user.JobTitle != null)
+                        if (!string.IsNullOrEmpty(user.JobTitle))
                         {
                             userFromDB.JobTitle = user.JobTitle;
                             hasChange = true;
                         }
-                        if (user.Department != null)
+                        if (!string.IsNullOrEmpty(user.Department))
                         {
                             userFromDB.Department = user.Department;
                             hasChange = true;
                         }
-                        if (user.Role != null)
+                        if (!string.IsNullOrEmpty(user.Role))
                         {
                             userFromDB.Role = user.Role;
                             hasChange = true;

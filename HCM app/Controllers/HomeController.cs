@@ -7,7 +7,9 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
+using AngleSharp.Html;
 using Ganss.Xss;
 using HCM_app.Migrations;
 using HCM_app.ViewModels;
@@ -189,8 +191,9 @@ namespace HCM_app.Controllers
                         await _clientCRUD.DeleteAsync($"api/CRUD/user/{department}/{HttpUtility.UrlEncode(userId)}");
                     }
                 }
-                await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
-                return RedirectToAction("Department");
+                int pageToReturn = page;
+                var res = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
+                return RedirectToAction("UpdateUsersManager", new {page=pageToReturn});
             }
             catch (Exception)
             {
@@ -286,8 +289,10 @@ namespace HCM_app.Controllers
                         await _clientCRUD.DeleteAsync($"api/CRUD/user/{HttpUtility.UrlEncode(userId)}");
                     }
                 }
-                await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsersAdmin", users.Where(x => !x.ShouldDelete).ToList());
-                return RedirectToAction("AdminPanel");
+                int pageToReturn = page;
+                var usersToSend = users.Where(x => !x.ShouldDelete).ToList(); 
+                var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/users", usersToSend);
+                return RedirectToAction("UpdateUsersAdmin", "Home", new { page= pageToReturn });
             }
             catch (Exception)
             {
