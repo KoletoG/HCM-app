@@ -34,7 +34,6 @@ namespace CRUDHCM_API
             options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(secretkey);
             options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
         });
-            builder.Services.AddMemoryCache();
             builder.Services.AddAuthorization(options => 
             {
                 options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin")); 
