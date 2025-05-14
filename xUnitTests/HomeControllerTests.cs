@@ -1,10 +1,13 @@
 ﻿using FluentAssertions;
 using Ganss.Xss;
 using HCM_app.Controllers;
+using HCM_app.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
+using SharedModels;
 
 namespace xUnitTests
 {
@@ -40,6 +43,53 @@ namespace xUnitTests
             var result = _controller.Index();
             var viewResult = Assert.IsType<ViewResult>(result);
             viewResult.ViewName.Should().BeNull();
+        }
+        [Fact]
+        public void Login_GETReturns_ReturnsView()
+        {
+            var result = _controller.Login();
+            result.Should().BeOfType<ViewResult>();
+        }
+        [Fact]
+        public void Register_GET_ReturnsView()
+        {
+            var result = _controller.Register();
+            result.Should().BeOfType<ViewResult>();
+        }
+        [Fact]
+        public void Error_ReturnsErrorView()
+        {
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            var result = _controller.Error();
+            var view = result as ViewResult;
+            view.Should().NotBeNull();
+            view.Model.Should().BeOfType<ErrorViewModel>();
+        }
+        [Fact]
+        public async Task Register_POST_InvalidModel_ReturnsViewWithModel()
+        {
+            _controller.ModelState.AddModelError("Email", "Required");
+            var model = new RegisterViewModel();
+            var result = await _controller.Register(model);
+            var view = result as ViewResult;
+            view.Should().NotBeNull();
+            view.Model.Should().Be(model);
+        }
+        [Theory]
+        [InlineData("user@example.com", "password123")]
+        public async Task Login_POST_ValidCredentials_ReturnsRedirect(string email, string password)
+        {
+            var model = new LoginViewModel { Email = email, Password = password };
+            var sessionMock = new Mock<ISession>();
+            var context = new DefaultHttpContext { Session = sessionMock.Object };
+            _controller.ControllerContext = new ControllerContext { HttpContext = context };
+            var result = await _controller.Login(model);
+            var redirect = result as RedirectToActionResult;
+            redirect.Should().NotBeNull();
+            redirect.ActionName.Should().Be("Index");
         }
     }
 }
