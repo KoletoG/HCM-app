@@ -444,6 +444,7 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Index","Home");
                 }
+                await _clientCRUD.PatchAsJsonAsync($"api/CRUD/user/password",new ChangePassViewModel(id,newPassword));
 
                 return RedirectToAction("Profile","Home");
             }

@@ -307,18 +307,18 @@ namespace CRUDHCM_API.Controllers
                 return Problem();
             }
         }
-        [HttpPatch]
+        [HttpPatch("user/password")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UpdatePassword([FromBody] string password, string id)
+        public async Task<IActionResult> UpdatePassword([FromBody] ChangePassViewModel changePassViewModel)
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id ==changePassViewModel.Id);
                 if (user == default)
                 {
                     return NotFound("User with that id doesn't exist");
                 }
-                user.Password = password;
+                user.PasswordHash=BCrypt.Net.BCrypt.HashPassword(changePassViewModel.NewPassword);
                 await _context.SaveChangesAsync();
                 return NoContent();
             }

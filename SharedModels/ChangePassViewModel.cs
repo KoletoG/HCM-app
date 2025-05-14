@@ -8,12 +8,12 @@ namespace SharedModels
 {
     public class ChangePassViewModel
     {
-        public string Id { get; set; }
-        public string OldPassword { get; set; }
         public string NewPassword { get; set; }
-        public ChangePassViewModel()
+        public string Id { get; set; }
+        public ChangePassViewModel(string id, string newPassword)
         {
-
+            Id = id;
+            NewPassword = newPassword;
         }
     }
 }

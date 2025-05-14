@@ -32,19 +32,6 @@ namespace AuthAPIHCM.Controllers
             _clientCRUD.BaseAddress = new Uri("https://localhost:7261/");
             _logger = logger;
         }
-        [HttpPatch]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> ChangePassword()
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
