@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRUDHCM_API", "CRUDHCM_API\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{A1F50275-1B08-48C2-8567-2F018673FA9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xUnitTests", "xUnitTests\xUnitTests.csproj", "{95066C5F-ED31-40BE-BDA6-7CD1FA9DE20D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1F50275-1B08-48C2-8567-2F018673FA9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95066C5F-ED31-40BE-BDA6-7CD1FA9DE20D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95066C5F-ED31-40BE-BDA6-7CD1FA9DE20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95066C5F-ED31-40BE-BDA6-7CD1FA9DE20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95066C5F-ED31-40BE-BDA6-7CD1FA9DE20D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
