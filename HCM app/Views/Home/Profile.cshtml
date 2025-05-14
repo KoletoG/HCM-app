@@ -34,7 +34,7 @@
 		@Model.Role
 	</div>
 </div>
-@if (!this.Context.Session.TryGetValue("jwt", out var jwt))
+@if (this.Context.Session.TryGetValue("jwt", out var jwt))
 {
 
 	var handler = new JwtSecurityTokenHandler();
@@ -43,7 +43,6 @@
 	var email = secToken.Claims.First(x => x.Type==ClaimTypes.Email).Value;
 	if (email == Model.Email)
 	{
-		var id = secToken.Claims.First(x => x.Type == "sub").Value;
 		<h4>To change your password, please type your old password and then your new password:</h4>
 		<form asp-action="ChangePassword" asp-controller="Home" method="post">
 			@Html.AntiForgeryToken()
@@ -51,7 +50,7 @@
 			<input type="password" name="oldPassword" />
 			<h5>Type your new password: </h5>
 			<input type="password" name="newPassword" />
-			<input type="hidden" name="id" value="@id"/>
+			<button type="submit">Change password</button>
 		</form>
 	}
 }

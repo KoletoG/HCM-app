@@ -422,7 +422,7 @@ namespace HCM_app.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword, string id)
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
         {
             try
             {
@@ -434,17 +434,13 @@ namespace HCM_app.Controllers
                 var tokenString = Encoding.UTF8.GetString(token);
                 var secToken = handler.ReadJwtToken(tokenString);
                 var idFromCurrentUser = secToken.Claims.First(x => x.Type == "sub").Value;
-                if (idFromCurrentUser != id)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
+                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{idFromCurrentUser}");
                 if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash))
                 {
                     return RedirectToAction("Index","Home");
                 }
-                await _clientCRUD.PatchAsJsonAsync($"api/CRUD/user/password",new ChangePassViewModel(id,newPassword));
+                await _clientCRUD.PatchAsJsonAsync($"api/CRUD/user/password",new ChangePassViewModel(idFromCurrentUser, newPassword));
 
                 return RedirectToAction("Profile","Home");
             }
