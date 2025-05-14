@@ -43,7 +43,7 @@ namespace HCM_app.Controllers
             _memoryCache = memoryCache;
             _htmlSanitizer.AllowedTags.Clear();
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
@@ -55,7 +55,7 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
-        [HttpGet]
+        [HttpGet("managerPanelUpdate/page-{page}")]
         public async Task<IActionResult> UpdateUsersManager(int page = 1)
         {
             try
@@ -96,7 +96,7 @@ namespace HCM_app.Controllers
                 return View("Error",new ErrorViewModel());
             }
         }
-        [HttpGet]
+        [HttpGet("adminPanelUpdate/page-{page}")]
         public async Task<IActionResult> UpdateUsersAdmin(int page = 1)
         {
             try
