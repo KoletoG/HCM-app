@@ -5,52 +5,54 @@
 @model ProfileViewModel
 <div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.FirstName):
-		@Model.FirstName
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.LastName):
-		@Model.LastName
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.Email):
-		@Model.Email
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.Department):
-		@Model.Department
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.JobTitle):
-		@Model.JobTitle
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.Salary):
-		@Model.Salary
-	</div>
-	<div class="mb-2 fs-4 fw-bolder font-monospace">
-		@Html.DisplayNameFor(x => x.Role):
-		@Model.Role
-	</div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.FirstName):
+        @Model.FirstName
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.LastName):
+        @Model.LastName
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.Email):
+        @Model.Email
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.Department):
+        @Model.Department
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.JobTitle):
+        @Model.JobTitle
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.Salary):
+        @Model.Salary
+    </div>
+    <div class="mb-2 fs-4 fw-bolder font-monospace">
+        @Html.DisplayNameFor(x => x.Role):
+        @Model.Role
+    </div>
 </div>
 @if (this.Context.Session.TryGetValue("jwt", out var jwt))
 {
+    var handler = new JwtSecurityTokenHandler();
+    var tokenString = Encoding.UTF8.GetString(jwt);
+    var secToken = handler.ReadJwtToken(tokenString);
+    var email = secToken.Claims.First(x => x.Type == ClaimTypes.Email).Value;
+    if (email == Model.Email)
+    {
+        <div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
-	var handler = new JwtSecurityTokenHandler();
-	var tokenString = Encoding.UTF8.GetString(jwt);
-	var secToken = handler.ReadJwtToken(tokenString);
-	var email = secToken.Claims.First(x => x.Type==ClaimTypes.Email).Value;
-	if (email == Model.Email)
-	{
-		<h4>To change your password, please type your old password and then your new password:</h4>
-		<form asp-action="ChangePassword" asp-controller="Home" method="post">
-			@Html.AntiForgeryToken()
-			<h5>Type your old password: </h5>
-			<input type="password" name="oldPassword" />
-			<h5>Type your new password: </h5>
-			<input type="password" name="newPassword" />
-			<button type="submit">Change password</button>
-		</form>
-	}
+            <h4 class="font-monospace">To change your password, please type your old password and then your new password:</h4>
+            <form asp-action="ChangePassword" asp-controller="Home" method="post">
+                @Html.AntiForgeryToken()
+                <h5 class="font-monospace">Type your old password: </h5>
+                <input type="password" class="form-control" name="oldPassword" />
+                <h5 class="font-monospace">Type your new password: </h5>
+                <input type="password" class="form-control" name="newPassword" />
+                <button type="submit" class=" btn btn-primary mb-3 mt-3 font-monospace btn-lg">Change password</button>
+            </form>
+        </div>
+    }
 }
