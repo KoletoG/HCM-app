@@ -1,4 +1,7 @@
 ﻿@using HCM_app.ViewModels
+@using System.IdentityModel.Tokens.Jwt
+@using System.Text
+@using System.Security.Claims
 @model ProfileViewModel
 <div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
@@ -31,3 +34,24 @@
 		@Model.Role
 	</div>
 </div>
+@if (!this.Context.Session.TryGetValue("jwt", out var jwt))
+{
+
+	var handler = new JwtSecurityTokenHandler();
+	var tokenString = Encoding.UTF8.GetString(jwt);
+	var secToken = handler.ReadJwtToken(tokenString);
+	var email = secToken.Claims.First(x => x.Type==ClaimTypes.Email).Value;
+	if (email == Model.Email)
+	{
+		var id = secToken.Claims.First(x => x.Type == "sub").Value;
+		<h4>To change your password, please type your old password and then your new password:</h4>
+		<form asp-action="ChangePassword" asp-controller="Home" method="post">
+			@Html.AntiForgeryToken()
+			<h5>Type your old password: </h5>
+			<input type="password" name="oldPassword" />
+			<h5>Type your new password: </h5>
+			<input type="password" name="newPassword" />
+			<input type="hidden" name="id" value="@id"/>
+		</form>
+	}
+}
