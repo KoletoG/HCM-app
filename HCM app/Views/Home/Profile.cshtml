@@ -6,32 +6,60 @@
 <div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
     <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.FirstName):
-        @Model.FirstName
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.FirstName):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.FirstName
+        </h5>
     </div>
     <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.LastName):
-        @Model.LastName
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.LastName):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.LastName
+        </h5>
+    </div><div class="mb-2 fs-4 fw-bolder font-monospace">
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.Email):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.Email
+        </h5>
     </div>
     <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.Email):
-        @Model.Email
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.Department):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.Department
+        </h5>
     </div>
     <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.Department):
-        @Model.Department
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.JobTitle):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.JobTitle
+        </h5>
     </div>
     <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.JobTitle):
-        @Model.JobTitle
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.Salary):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.Salary
+        </h5>
     </div>
-    <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.Salary):
-        @Model.Salary
-    </div>
-    <div class="mb-2 fs-4 fw-bolder font-monospace">
-        @Html.DisplayNameFor(x => x.Role):
-        @Model.Role
+
+    <div class="mb-2 fs-4 fw-bolder ">
+        <h5 class="font-monospace">
+            @Html.DisplayNameFor(x => x.Role):
+        </h5>
+        <h5 class="font-monospace fw-bold">
+            @Model.Role
+        </h5>
     </div>
 </div>
 @if (this.Context.Session.TryGetValue("jwt", out var jwt))
