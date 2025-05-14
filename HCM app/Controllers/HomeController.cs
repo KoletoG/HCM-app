@@ -420,6 +420,39 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword, string id)
+        {
+            try
+            {
+                if (!HttpContext.Session.TryGetValue("jwt", out var token))
+                {
+                    return RedirectToAction("Login", "Home");
+                }
+                var handler = new JwtSecurityTokenHandler();
+                var tokenString = Encoding.UTF8.GetString(token);
+                var secToken = handler.ReadJwtToken(tokenString);
+                var idFromCurrentUser = secToken.Claims.First(x => x.Type == "sub").Value;
+                if (idFromCurrentUser != id)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
+                if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash))
+                {
+                    return RedirectToAction("Index","Home");
+                }
+
+                return RedirectToAction("Profile","Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error has happened in {nameof(Profile)}");
+                return View("Error", new ErrorViewModel());
+            }
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

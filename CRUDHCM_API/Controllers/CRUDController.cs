@@ -174,8 +174,6 @@ namespace CRUDHCM_API.Controllers
             {
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
-
-
                 return CreatedAtAction("AddUser", user);
             }
             catch (DbUpdateException ex)
@@ -309,7 +307,27 @@ namespace CRUDHCM_API.Controllers
                 return Problem();
             }
         }
-
+        [HttpPatch]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> UpdatePassword([FromBody] string password, string id)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+                if (user == default)
+                {
+                    return NotFound("User with that id doesn't exist");
+                }
+                user.Password = password;
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"There was an error in {nameof(UpdatePassword)}");
+                return Problem();
+            }
+        }
         [HttpDelete("user/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "HrAdmin")]
         public async Task<IActionResult> DeleteUser(string id)

@@ -12,6 +12,7 @@ using AuthAPIHCM.Interfaces;
 using BCrypt.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AuthAPIHCM.Controllers
 {
@@ -31,7 +32,19 @@ namespace AuthAPIHCM.Controllers
             _clientCRUD.BaseAddress = new Uri("https://localhost:7261/");
             _logger = logger;
         }
+        [HttpPatch]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangePassword()
+        {
+            try
+            {
 
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
         {
@@ -73,7 +86,7 @@ namespace AuthAPIHCM.Controllers
                 {
                     return BadRequest(registerModel);
                 }
-                string userRole;
+                string userRole; // These lines of code is for when there is no seeding, admin@email.com is always for the admin and manager@email.com for manager
                 if (registerModel.Email == "admin@email.com")
                 {
                     userRole = "HrAdmin";
