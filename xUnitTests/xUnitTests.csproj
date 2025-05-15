@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthAPIHCM\AuthAPIHCM.csproj" />
+    <ProjectReference Include="..\CRUDHCM_API\CRUDHCM_API.csproj" />
     <ProjectReference Include="..\HCM app\HCM app.csproj" />
   </ItemGroup>
 
