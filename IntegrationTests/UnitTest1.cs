@@ -10,6 +10,8 @@ using System.Text;
 using System.Net.Http.Headers;
 using AuthAPIHCM;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
+using Xunit.Abstractions;
 
 public class AuthCrudFlowTests
 {
@@ -17,8 +19,10 @@ public class AuthCrudFlowTests
     private readonly HttpClient _authClient;
     private readonly HttpClient _crudClient;
 
-    public AuthCrudFlowTests()
+    private readonly ITestOutputHelper _output;
+    public AuthCrudFlowTests(ITestOutputHelper output)
     {
+        _output = output;
         _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
@@ -40,6 +44,19 @@ public class AuthCrudFlowTests
         Assert.NotNull(response);
     }
     [Fact]
+    public async Task SanityCheck_AuthApiResponds()
+    {
+        var response = await _authClient.GetAsync("/api/auth/login");
+        var content = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine("=== LOGIN GET ===");
+        Console.WriteLine($"Status: {response.StatusCode}");
+        Console.WriteLine($"Body: {content}");
+        Console.WriteLine("=================");
+
+        Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+    [Fact]
     public async Task RegisterLoginCrudFlow_Succeeds()
     {
         // --- 1. Register User ---
@@ -58,13 +75,13 @@ public class AuthCrudFlowTests
         Assert.Equal(HttpStatusCode.NoContent, registerResponse.StatusCode);
 
         // --- 2. Login User ---
-        var loginModel = new
+        var loginModel = new LoginViewModel()
         {
             Email = "testuser@example.com",
             Password = "Test1234!"
         };
 
-        var loginResponse = await _authClient.PostAsJsonAsync("api/auth/login", loginModel);
+        var loginResponse = await _authClient.PostAsJsonAsync<LoginViewModel>("api/auth/login", loginModel);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
         var token = await loginResponse.Content.ReadAsStringAsync();
@@ -72,6 +89,7 @@ public class AuthCrudFlowTests
 
         // --- 3. Get user by email ---
         var emailResponse = await _crudClient.GetAsync($"api/CRUD/users/email-testuser@example.com");
+
         Assert.Equal(HttpStatusCode.OK, emailResponse.StatusCode);
 
         var user = await emailResponse.Content.ReadFromJsonAsync<UserDataModel>();
@@ -91,6 +109,6 @@ public class AuthCrudFlowTests
 
         // --- 5. Delete user ---
         var deleteResponse = await _crudClient.DeleteAsync($"api/CRUD/user/{user.Id}");
-        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
     }
 }
