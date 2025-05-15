@@ -5,6 +5,7 @@ using AuthAPIHCM.Interfaces;
 using AuthAPIHCM.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SharedModels;
@@ -39,19 +40,18 @@ namespace AuthAPIHCM
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
-            }); if (builder.Environment.IsEnvironment("Testing"))
+            }); 
+            if (builder.Environment.IsEnvironment("Testing"))
             {
-                // In-memory DB for integration tests
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseInMemoryDatabase("TestDb")); 
                 builder.Services.AddHttpClient("CRUDAPI", client =>
                     {
-                        client.BaseAddress = new Uri("http://localhost"); // MUST point to in-memory test server
+                        client.BaseAddress = new Uri("http://localhost");
                     });
             }
             else
             {
-                // Real DB for dev/production
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

@@ -112,7 +112,7 @@ namespace AuthAPIHCM.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"There was an error in {nameof(Register)}");
-                return Problem();
+                return Problem($"{ex.Message}");
             }
         }
     }
