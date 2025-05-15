@@ -43,20 +43,28 @@ namespace AuthAPIHCM
             {
                 // In-memory DB for integration tests
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseInMemoryDatabase("TestDb"));
+                    options.UseInMemoryDatabase("TestDb")); 
+                builder.Services.AddHttpClient("CRUDAPI", client =>
+                    {
+                        client.BaseAddress = new Uri("http://localhost"); // MUST point to in-memory test server
+                    });
             }
             else
             {
                 // Real DB for dev/production
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+                builder.Services.AddHttpClient("CRUDAPI", client =>
+                {
+                    client.BaseAddress = new Uri("https://localhost:7261/");
+                });
             }
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));
             });
             builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
