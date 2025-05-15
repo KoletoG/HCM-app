@@ -157,7 +157,7 @@ namespace HCM_app.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUsersManager(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
+        public async Task<IActionResult> UpdateUsersManager1(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
         {
             try
             {
@@ -255,10 +255,9 @@ namespace HCM_app.Controllers
             }
             return true;
         }
-        // ADD PAGING, CACHING, LIST OF ROLES WHEN UPDATING
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUsersAdmin(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
+        public async Task<IActionResult> UpdateUsersAdmin1(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
         {
             try
             {

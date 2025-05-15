@@ -9,7 +9,7 @@
 }
 <div class="mb-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
 
-	<form asp-action="UpdateUsersAdmin" asp-controller="Home" asp-route-page="@Model.Page" asp-route-isFirstPage="@Model.IsFirstPage" asp-route-isLastPage="@Model.IsLastPage" method="post">
+	<form method="post" asp-action="UpdateUsersAdmin1" asp-controller="Home" asp-route-page="@Model.Page" asp-route-isFirstPage="@Model.IsFirstPage" asp-route-isLastPage="@Model.IsLastPage">
 		@Html.AntiForgeryToken()
 		@for (int i = 0; i < Model.Users.Count; i++)
 		{
