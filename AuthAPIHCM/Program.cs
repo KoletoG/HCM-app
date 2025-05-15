@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SharedModels;
-
 namespace AuthAPIHCM
 {
     public class Program
@@ -40,7 +39,18 @@ namespace AuthAPIHCM
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
-            });
+            }); if (builder.Environment.IsEnvironment("Testing"))
+            {
+                // In-memory DB for integration tests
+                builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("TestDb"));
+            }
+            else
+            {
+                // Real DB for dev/production
+                builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            }
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("HrAdminPolicy", x => x.RequireClaim("HrAdmin"));
