@@ -9,7 +9,11 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using SharedModels;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace xUnitTests
 {
@@ -33,9 +37,13 @@ namespace xUnitTests
             var httpClient = new HttpClient(_mockHttpMessageHandler.Object)
             {
                 BaseAddress = new Uri("https://localhost:7029/")
+            }; 
+            var httpClient2 = new HttpClient(_mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("https://localhost:7261/")
             };
             _mockFactory.Setup(f => f.CreateClient("AuthAPI")).Returns(httpClient);
-            _mockFactory.Setup(f => f.CreateClient("CRUDAPI")).Returns(httpClient);
+            _mockFactory.Setup(f => f.CreateClient("CRUDAPI")).Returns(httpClient2);
             _mockSanitizer.Setup(s => s.AllowedTags).Returns(new HashSet<string>());
             _controller = new HomeController(
                 _mockLogger.Object,
@@ -85,6 +93,92 @@ namespace xUnitTests
             view.Should().NotBeNull();
             view.Model.Should().Be(model);
         }
+        private byte[] CreateFakeJwt(string role, string department="IT")
+        {
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Role, role),
+        new Claim("Department", department)
+    };
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1)
+            );
+
+            var handler = new JwtSecurityTokenHandler();
+            var tokenString = handler.WriteToken(token);
+            return Encoding.UTF8.GetBytes(tokenString);
+        }
+
+        [Fact]
+        public async Task UpdateUsersManager_NoTokenInSession_RedirectsToLogin()
+        {
+            var sessionMock = new Mock<ISession>();
+            byte[] outValue = null;
+            sessionMock
+                .Setup(s => s.TryGetValue("jwt", out outValue))
+                .Returns(false);
+
+            var context = new DefaultHttpContext
+            {
+                Session = sessionMock.Object
+            };
+            _controller.ControllerContext = new ControllerContext { HttpContext = context };
+            var result = await _controller.UpdateUsersManager();
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+            Assert.Equal("Home", redirect.ControllerName);
+        }
+
+        [Fact]
+        public async Task UpdateUsersManager_NonManagerRole_RedirectsToLogin()
+        {
+            var context = new DefaultHttpContext();
+            var session = new Mock<ISession>();
+            var token = CreateFakeJwt("HrAdmin");
+            session.Setup(s => s.TryGetValue("jwt", out token)).Returns(true);
+            context.Session = session.Object;
+            _controller.ControllerContext = new ControllerContext { HttpContext = context };
+
+            var result = await _controller.UpdateUsersManager();
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+        }
+       
+
+
+        [Fact]
+        public async Task UpdateUsersAdmin_InvalidRole_RedirectsToLogin()
+        {
+            var context = new DefaultHttpContext();
+            var session = new Mock<ISession>();
+            var token = CreateFakeJwt("Manager");
+            session.Setup(s => s.TryGetValue("jwt", out token)).Returns(true);
+            context.Session = session.Object;
+            _controller.ControllerContext = new ControllerContext { HttpContext = context };
+
+            var result = await _controller.UpdateUsersAdmin();
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Login", redirect.ActionName);
+        }
+        [Fact]
+        public async Task UpdateUsersAdmin_ThrowsException_ReturnsErrorView()
+        {
+            var context = new DefaultHttpContext();
+            var session = new Mock<ISession>();
+            var token = CreateFakeJwt("HrAdmin");
+            session.Setup(s => s.TryGetValue("jwt", out token)).Returns(true);
+            context.Session = session.Object;
+            _controller.ControllerContext = new ControllerContext { HttpContext = context };
+            var result = await _controller.UpdateUsersAdmin();
+
+            var view = Assert.IsType<ViewResult>(result);
+            Assert.Equal("Error", view.ViewName);
+        }
+
         [Theory]
         [InlineData("user@example.com", "password123")]
         public async Task Login_POST_ValidCredentials_ReturnsRedirect(string email, string password)
