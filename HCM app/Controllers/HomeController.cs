@@ -341,9 +341,9 @@ namespace HCM_app.Controllers
                 {
                     var token = await result.Content.ReadAsStringAsync();
                     HttpContext.Session.SetString("jwt", token);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Profile", "Home");
                 }
-                return View();
+                return RedirectToAction("Login");
             }
             catch (Exception ex)
             {

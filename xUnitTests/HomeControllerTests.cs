@@ -7,12 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Moq.Protected;
 using SharedModels;
+using System.Net;
 
 namespace xUnitTests
 {
     public class HomeControllerTests
     {
+        private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private readonly Mock<ILogger<HomeController>> _mockLogger;
         private readonly Mock<IHttpClientFactory> _mockFactory;
         private readonly Mock<IHtmlSanitizer> _mockSanitizer;
@@ -24,9 +27,13 @@ namespace xUnitTests
             _mockLogger = new Mock<ILogger<HomeController>>();
             _mockFactory = new Mock<IHttpClientFactory>();
             _mockSanitizer = new Mock<IHtmlSanitizer>();
-            _mockCache = new Mock<IMemoryCache>();
-            var mockClient = new Mock<HttpMessageHandler>();
-            var httpClient = new HttpClient(mockClient.Object);
+            _mockCache = new Mock<IMemoryCache>(); 
+            _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+
+            var httpClient = new HttpClient(_mockHttpMessageHandler.Object)
+            {
+                BaseAddress = new Uri("https://localhost:7029/")
+            };
             _mockFactory.Setup(f => f.CreateClient("AuthAPI")).Returns(httpClient);
             _mockFactory.Setup(f => f.CreateClient("CRUDAPI")).Returns(httpClient);
             _mockSanitizer.Setup(s => s.AllowedTags).Returns(new HashSet<string>());
@@ -83,13 +90,46 @@ namespace xUnitTests
         public async Task Login_POST_ValidCredentials_ReturnsRedirect(string email, string password)
         {
             var model = new LoginViewModel { Email = email, Password = password };
+
+            var sessionMock = new Mock<ISession>();
+            sessionMock
+                .Setup(s => s.Set(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Verifiable();
+
+            var httpContext = new DefaultHttpContext { Session = sessionMock.Object };
+            _controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post && req.RequestUri.ToString().Contains("api/auth/login")),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("fake-jwt-token"),
+                });
+
+            var result = await _controller.Login(model);
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Profile", redirect.ActionName);
+            sessionMock.Verify();
+        }
+        [Theory]
+        [InlineData("userexample", "password123")]
+        public async Task Login_POST_InvalidCredentials_ReturnsRedirect(string email, string password)
+        {
+            var model = new LoginViewModel { Email = email, Password = password };
             var sessionMock = new Mock<ISession>();
             var context = new DefaultHttpContext { Session = sessionMock.Object };
             _controller.ControllerContext = new ControllerContext { HttpContext = context };
             var result = await _controller.Login(model);
-            var redirect = result as RedirectToActionResult;
+            var redirect = result as ViewResult;
             redirect.Should().NotBeNull();
-            redirect.ActionName.Should().Be("Index");
+            redirect.ViewName.Should().Be("Error");
         }
     }
 }
