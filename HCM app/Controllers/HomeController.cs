@@ -81,6 +81,7 @@ namespace HCM_app.Controllers
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}");
                 ValidatePages(int.Parse(usersCount), ref page, out bool isLastPage, out bool isFirstPage);
+                department=HttpUtility.HtmlEncode(department);
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}/page-{page}");
                 return View(new UsersToUpdateViewModel(users, isLastPage, isFirstPage, page));
             }
@@ -167,16 +168,17 @@ namespace HCM_app.Controllers
                     ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
                 }
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
+                var id = _tokenService.GetId(secToken);
+                var department = _tokenService.GetDepartment(secToken);
                 if (!ModelState.IsValid)
                 {
-                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
+                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}/page-{page}");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
                     return View("UpdateUsersManager", new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
-                var id = _tokenService.GetId(secToken);
-                var department = _tokenService.GetDepartment(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
-                department = HttpUtility.UrlEncode(department); // Encodes department for url query
+                // Encodes department for url query
+                department = HttpUtility.UrlEncode(department);
                 foreach (var userId in userIdsToDeleteList) // Deletes every user which checkbox has been checked
                 {
                     if (userId != id)
