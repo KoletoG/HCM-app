@@ -32,7 +32,7 @@ README.md - This file
 - Visual Studio or VS Code
 - SQL Server
 
-### For first time usage - 
+### ❗️ For first time usage - 
 - #### You need to have a database with the name - HCMdb!
 - #### Type Update-Database in Package Manager Console!
 - Locate Constants.cs in SharedModels
@@ -40,7 +40,7 @@ README.md - This file
 - You can use the current secret key if you only want to test the project (it's hardcoded everywhere)
 - If you want to change the secret key then you would need to change it in every Program.cs file and in AuthService.cs
 - If you want to run the integration tests, make sure the CRUDAPI is running
-#### Seeded-ready accounts for testing (all emails are just for testing):
+#### 👤 Seeded-ready accounts for testing (all emails are just for testing):
 Email: admin@email.com
 Password: 123123
 Role: HrAdmin
