@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Ganss.Xss;
 using HCM_app.Controllers;
+using HCM_app.Interfaces;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,12 +26,14 @@ namespace xUnitTests
         private readonly Mock<IHtmlSanitizer> _mockSanitizer;
         private readonly Mock<IMemoryCache> _mockCache;
         private readonly HomeController _controller;
+        private readonly Mock<IUserInputService> _mockUI;
 
         public HomeControllerTests()
         {
             _mockLogger = new Mock<ILogger<HomeController>>();
             _mockFactory = new Mock<IHttpClientFactory>();
             _mockSanitizer = new Mock<IHtmlSanitizer>();
+            _mockUI = new Mock<IUserInputService>();
             _mockCache = new Mock<IMemoryCache>(); 
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
 
@@ -49,7 +52,8 @@ namespace xUnitTests
                 _mockLogger.Object,
                 _mockFactory.Object,
                 _mockSanitizer.Object,
-                _mockCache.Object);
+                _mockCache.Object,
+                _mockUI.Object);
         }
         /// <summary>
         /// Tests Index

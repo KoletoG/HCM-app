@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using System.Web;
 using AngleSharp.Html;
 using Ganss.Xss;
+using HCM_app.Interfaces;
 using HCM_app.Migrations;
 using HCM_app.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,8 +35,10 @@ namespace HCM_app.Controllers
         private readonly HttpClient _clientCRUD;
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly IMemoryCache _memoryCache;
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache)
+        private readonly IUserInputService _userInputService;
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache, IUserInputService userInputService)
         {
+            _userInputService=userInputService;
             _logger = logger;
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
@@ -136,25 +139,6 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
-        private void SanitizeInput(List<DepartmentUpdateViewModel> viewModel)
-        {
-            try
-            {
-                foreach (var user in viewModel)
-                {
-                    user.Id = _htmlSanitizer.Sanitize(user.Id);
-                    user.Department = _htmlSanitizer.Sanitize(user.Department);
-                    user.JobTitle = _htmlSanitizer.Sanitize(user.JobTitle);
-                    user.Email = _htmlSanitizer.Sanitize(user.Email);
-                    user.FirstName = _htmlSanitizer.Sanitize(user.FirstName);
-                    user.LastName = _htmlSanitizer.Sanitize(user.LastName);
-                    user.Role = _htmlSanitizer.Sanitize(user.Role);
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUsersManager1(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
@@ -173,13 +157,13 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                SanitizeInput(users);
-                ChangeRoleNaming(users);
-                if (HasInvalidRole(users))
+                _userInputService.SanitizeInput(users);
+                _userInputService.ChangeRoleNaming(users);
+                if (_userInputService.HasInvalidRole(users))
                 {
                     ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
                 }
-                if (!IsValidSalary(users))
+                if (!_userInputService.IsValidSalary(users))
                 {
                     ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
                 }
@@ -211,50 +195,6 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
-        private void ChangeRoleNaming(List<DepartmentUpdateViewModel> users)
-        {
-            foreach (var user in users)
-            {
-                string userRoleLowered = user.Role.ToLower();
-                if (userRoleLowered == "manager")
-                {
-                    user.Role = "Manager";
-                }
-                else if (userRoleLowered == "hradmin")
-                {
-                    user.Role = "HrAdmin";
-                }
-                else if (userRoleLowered == "employee")
-                {
-                    user.Role = "Employee";
-                }
-            }
-        }
-        private bool HasInvalidRole(List<DepartmentUpdateViewModel> users)
-        {
-            foreach (var user in users)
-            {
-                if (user.Role != "Manager" && user.Role != "HrAdmin" && user.Role != "Employee" && !string.IsNullOrEmpty(user.Role))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        private bool IsValidSalary(List<DepartmentUpdateViewModel> users)
-        {
-            foreach (var user in users)
-            {
-                if (user.Salary != default)
-                {
-                    if (user.Salary < 0)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUsersAdmin1(List<DepartmentUpdateViewModel> users, int page, bool isLastPage, bool isFirstPage)
@@ -273,13 +213,13 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                SanitizeInput(users);
-                ChangeRoleNaming(users);
-                if (HasInvalidRole(users))
+                _userInputService.SanitizeInput(users);
+                _userInputService.ChangeRoleNaming(users);
+                if (_userInputService.HasInvalidRole(users))
                 {
                     ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
                 }
-                if (!IsValidSalary(users))
+                if (!_userInputService.IsValidSalary(users))
                 {
                     ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
                 }

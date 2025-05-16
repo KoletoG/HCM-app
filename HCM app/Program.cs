@@ -2,6 +2,8 @@
 using System.Text;
 using Ganss.Xss;
 using HCM_app.Data;
+using HCM_app.Interfaces;
+using HCM_app.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,7 @@ namespace HCM_app
             });
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IHtmlSanitizer, HtmlSanitizer>();
+            builder.Services.AddTransient<IUserInputService, UserInputService>();
             builder.Services.AddAuthentication()
         .AddJwtBearer(options =>
         {
