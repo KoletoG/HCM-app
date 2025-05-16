@@ -87,6 +87,8 @@ Role: Employee
 
 - Security against IDOR through validation checks
 
+- Security against SQL injections
+
 ## 🙋 Roles
 #### Role - Permissions
 Employee -	View profile only
