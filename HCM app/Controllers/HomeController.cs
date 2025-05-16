@@ -82,19 +82,7 @@ namespace HCM_app.Controllers
                 var department = _tokenService.GetDepartment(secToken);
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}");
-                int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
-                bool isLastPage = false;
-                bool isFirstPage = false;
-                if (page >= pagesCount)
-                {
-                    page = pagesCount;
-                    isLastPage = true;
-                }
-                else if (page <= 1)
-                {
-                    page = 1;
-                    isFirstPage = true;
-                }
+                ValidatePages(int.Parse(usersCount), ref page, out bool isLastPage, out bool isFirstPage);
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/department-{department}/page-{page}");
                 return View(new UsersToUpdateViewModel(users, isLastPage, isFirstPage, page));
             }
@@ -102,6 +90,22 @@ namespace HCM_app.Controllers
             {
                 _logger.LogError(ex, $"An error has happened in {nameof(UpdateUsersManager)}"); 
                 return View("Error",new ErrorViewModel());
+            }
+        }
+        private void ValidatePages(int usersCount, ref int page, out bool isLastPage, out bool isFirstPage)
+        {
+            int pagesCount = (int)Math.Ceiling((double)usersCount / Constants.usersPerPage);
+            isLastPage = false;
+            isFirstPage = false;
+            if (page >= pagesCount)
+            {
+                page = pagesCount;
+                isLastPage = true;
+            }
+            else if (page <= 1)
+            {
+                page = 1;
+                isFirstPage = true;
             }
         }
         [HttpGet("adminPanelUpdate/page-{page}")]
@@ -120,19 +124,7 @@ namespace HCM_app.Controllers
                 }
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount");
-                int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
-                bool isLastPage = false;
-                bool isFirstPage = false;
-                if (page >= pagesCount)
-                {
-                    page = pagesCount;
-                    isLastPage = true;
-                }
-                else if (page <= 1)
-                {
-                    page = 1;
-                    isFirstPage = true;
-                }
+                ValidatePages(int.Parse(usersCount), ref page, out bool isLastPage, out bool isFirstPage);
                 var users = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
                 return View(new UsersToUpdateViewModel(users, isLastPage, isFirstPage, page));
             }
@@ -158,8 +150,8 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                _userInputService.SanitizeInput(users);
-                _userInputService.ChangeRoleNaming(users);
+                _userInputService.SanitizeInput(users); // Sanitize input against XSS
+                _userInputService.ChangeRoleNaming(users); // Makes sure Role is correctly written
                 if (_userInputService.HasInvalidRole(users))
                 {
                     ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
@@ -179,7 +171,7 @@ namespace HCM_app.Controllers
                 var department = _tokenService.GetDepartment(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
                 department = HttpUtility.UrlEncode(department);
-                foreach (var userId in userIdsToDeleteList)
+                foreach (var userId in userIdsToDeleteList) // Deletes every user which checkbox has been checked
                 {
                     if (userId != id)
                     {
@@ -187,7 +179,7 @@ namespace HCM_app.Controllers
                     }
                 }
                 int pageToReturn = page;
-                var res = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());
+                var res = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/updateUsers/{department}", users.Where(x => !x.ShouldDelete).ToList());// Updates the users which checkbox hasn't been checked
                 return RedirectToAction("UpdateUsersManager", new { page = pageToReturn });
             }
             catch (Exception ex)
@@ -212,8 +204,8 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
-                _userInputService.SanitizeInput(users);
-                _userInputService.ChangeRoleNaming(users);
+                _userInputService.SanitizeInput(users); // Sanitize input against XSS
+                _userInputService.ChangeRoleNaming(users); // Makes sure Role is correctly written
                 if (_userInputService.HasInvalidRole(users))
                 {
                     ModelState.AddModelError("roleError", "Invalid role, role should be one of the following - Employee / Manager / HrAdmin");
@@ -231,7 +223,7 @@ namespace HCM_app.Controllers
                 }
                 var id = _tokenService.GetId(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
-                foreach (var userId in userIdsToDeleteList)
+                foreach (var userId in userIdsToDeleteList) // Deletes every user which checkbox has been checked
                 {
                     if (userId != id)
                     {
@@ -239,7 +231,7 @@ namespace HCM_app.Controllers
                     }
                 }
                 int pageToReturn = page;
-                var usersToSend = users.Where(x => !x.ShouldDelete).ToList();
+                var usersToSend = users.Where(x => !x.ShouldDelete).ToList(); // Updates the users which checkbox hasn't been checked
                 var result = await _clientCRUD.PatchAsJsonAsync<List<DepartmentUpdateViewModel>>($"api/CRUD/users", usersToSend);
                 return RedirectToAction("UpdateUsersAdmin", "Home", new { page = pageToReturn });
             }
