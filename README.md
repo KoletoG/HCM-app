@@ -94,3 +94,13 @@ Employee -	View profile only
 Manager -	View & update users in their department
 
 HrAdmin -	View, update, and delete users across all departments
+
+## 📝 Author Notes
+
+### This project was built using ASP.NET Core MVC with a focus on:
+
+- Clean separation between services
+
+- Testability via DI and layered architecture
+
+- Frontend security and input validation
