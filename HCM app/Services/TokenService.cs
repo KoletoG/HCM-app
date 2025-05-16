@@ -1,10 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using HCM_app.Interfaces;
 
 namespace HCM_app.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly JwtSecurityTokenHandler _handler;
         public TokenService(JwtSecurityTokenHandler handler) 
