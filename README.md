@@ -36,7 +36,7 @@ README.md - This file
 - #### You need to have a database with the name - HCMdb!
 - #### Type Update-Database in Package Manager Console!
 - Locate Constants.cs in SharedModels
-- Change usersPerPage depending on how many users you want to view per page (default is 3, users are ordered alphabetically of their first names)
+- Change usersPerPage depending on how many users you want to view per page (default is 5, users are ordered alphabetically of their first names)
 - You can use the current secret key if you only want to test the project (it's hardcoded everywhere)
 - If you want to change the secret key then you would need to change it in every Program.cs file and in AuthService.cs
 - If you want to run the integration tests, make sure the CRUDAPI is running
