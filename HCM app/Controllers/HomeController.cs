@@ -65,6 +65,7 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
+        // Loads the users in the manager panel
         [HttpGet("managerPanelUpdate/page-{page}")]
         public async Task<IActionResult> UpdateUsersManager(int page = 1)
         {
@@ -92,6 +93,13 @@ namespace HCM_app.Controllers
                 return View("Error",new ErrorViewModel());
             }
         }
+        /// <summary>
+        /// Logic for pages
+        /// </summary>
+        /// <param name="usersCount">Count of all the pages</param>
+        /// <param name="page">Current page</param>
+        /// <param name="isLastPage">If the user is at the first page</param>
+        /// <param name="isFirstPage">If the user is at the last page</param>
         private void ValidatePages(int usersCount, ref int page, out bool isLastPage, out bool isFirstPage)
         {
             int pagesCount = (int)Math.Ceiling((double)usersCount / Constants.usersPerPage);
@@ -108,6 +116,7 @@ namespace HCM_app.Controllers
                 isFirstPage = true;
             }
         }
+        // Loads the users in the admin panel
         [HttpGet("adminPanelUpdate/page-{page}")]
         public async Task<IActionResult> UpdateUsersAdmin(int page = 1)
         {
@@ -170,7 +179,7 @@ namespace HCM_app.Controllers
                 var id = _tokenService.GetId(secToken);
                 var department = _tokenService.GetDepartment(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
-                department = HttpUtility.UrlEncode(department);
+                department = HttpUtility.UrlEncode(department); // Encodes department for url query
                 foreach (var userId in userIdsToDeleteList) // Deletes every user which checkbox has been checked
                 {
                     if (userId != id)
@@ -260,8 +269,8 @@ namespace HCM_app.Controllers
         {
             try
             {
-                loginModel.Email = _htmlSanitizer.Sanitize(loginModel.Email);
-                loginModel.Password = _htmlSanitizer.Sanitize(loginModel.Password);
+                loginModel.Email = _htmlSanitizer.Sanitize(loginModel.Email); // Sanitizes against XSS
+                loginModel.Password = _htmlSanitizer.Sanitize(loginModel.Password); // Sanitizes against XSS
                 if (!ModelState.IsValid)
                 {
                     return View(loginModel);
@@ -291,7 +300,17 @@ namespace HCM_app.Controllers
                 {
                     return View(registerModel);
                 }
-                var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", registerModel);
+                var sanitizedRegisterModel = new RegisterViewModel()
+                {
+                    FirstName = _htmlSanitizer.Sanitize(registerModel.FirstName),
+                    LastName=_htmlSanitizer.Sanitize(registerModel.LastName),
+                    Department=_htmlSanitizer.Sanitize(registerModel.Department),
+                    Email=_htmlSanitizer.Sanitize(registerModel.Email),
+                    JobTitle=_htmlSanitizer.Sanitize(registerModel.JobTitle),
+                    Password=_htmlSanitizer.Sanitize(registerModel.Password),
+                    Salary=registerModel.Salary
+                };
+                var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", sanitizedRegisterModel);
                 if (result.IsSuccessStatusCode)
                 {
                     return RedirectToAction("Login", "Home");
@@ -358,6 +377,8 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
+                oldPassword = _htmlSanitizer.Sanitize(oldPassword);
+                newPassword=_htmlSanitizer.Sanitize(newPassword);
                 var secToken = _tokenService.GetToken(token);
                 var idFromCurrentUser = _tokenService.GetId(secToken);
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
