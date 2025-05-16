@@ -4,7 +4,12 @@
 @using System.Security.Claims
 @model ProfileViewModel
 <div class="mb-5 mt-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
-
+<form asp-action="Logout" asp-controller="Home" method="post">
+    @Html.AntiForgeryToken()
+        <button class="btn btn-danger mb-3 mt-3 font-monospace btn-lg" type="submit">
+            Logout
+        </button>
+</form>
     <div class="mb-2 fs-4 fw-bolder font-monospace">
         <h5 class="font-monospace">
             @Html.DisplayNameFor(x => x.FirstName):

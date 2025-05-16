@@ -328,6 +328,13 @@ namespace HCM_app.Controllers
                 return View("Error", new ErrorViewModel());
             }
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            this.HttpContext.Session.Remove("jwt");
+            return RedirectToAction("Login", "Home");
+        }
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
