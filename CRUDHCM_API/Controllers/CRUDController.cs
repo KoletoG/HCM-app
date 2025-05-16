@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authentication;
 using HCM_app.ViewModels;
 using System.Web;
 using Microsoft.Extensions.Caching.Memory;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CRUDHCM_API.Controllers
 {
@@ -206,6 +205,7 @@ namespace CRUDHCM_API.Controllers
                 }
                 foreach (var user in users)
                 {
+                    // Update only the properties that have been input
                     if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
                     {
                         if (user.Salary != default)
@@ -261,6 +261,7 @@ namespace CRUDHCM_API.Controllers
                 var usersFromDB = await _context.Users.ToDictionaryAsync(x => x.Id);
                 foreach (var user in users)
                 {
+                    // Update only the properties that have been input
                     if (usersFromDB.TryGetValue(user.Id, out UserDataModel userFromDB)) // Gets the same user from the DepartmentUpdateVM
                     {
                         if (user.Salary != default)

@@ -27,7 +27,7 @@ namespace AuthAPIHCM.Services
             new Claim(ClaimTypes.Email,user.Email),
             new Claim("Department",user.Department)
         };
-
+            // Uses hardcoded key for this scenario as for easier configuration
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSuperSecretKeyOfMineHaha123123123123123123123123123123123123"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

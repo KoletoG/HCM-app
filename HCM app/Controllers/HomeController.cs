@@ -309,7 +309,7 @@ namespace HCM_app.Controllers
                     JobTitle=_htmlSanitizer.Sanitize(registerModel.JobTitle),
                     Password=_htmlSanitizer.Sanitize(registerModel.Password),
                     Salary=registerModel.Salary
-                };
+                };  // against XSS
                 var result = await _clientAuth.PostAsJsonAsync<RegisterViewModel>("api/auth/register", sanitizedRegisterModel);
                 if (result.IsSuccessStatusCode)
                 {
@@ -377,7 +377,7 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                oldPassword = _htmlSanitizer.Sanitize(oldPassword);
+                oldPassword = _htmlSanitizer.Sanitize(oldPassword); // against XSS
                 newPassword=_htmlSanitizer.Sanitize(newPassword);
                 var secToken = _tokenService.GetToken(token);
                 var idFromCurrentUser = _tokenService.GetId(secToken);
