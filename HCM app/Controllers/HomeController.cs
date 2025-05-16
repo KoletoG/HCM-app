@@ -34,13 +34,11 @@ namespace HCM_app.Controllers
         private readonly HttpClient _clientAuth;
         private readonly HttpClient _clientCRUD;
         private readonly IHtmlSanitizer _htmlSanitizer;
-        private readonly IMemoryCache _memoryCache;
         private readonly IUserInputService _userInputService;
         private readonly ITokenService _tokenService;
         public HomeController(ILogger<HomeController> logger, 
             IHttpClientFactory client, 
             IHtmlSanitizer htmlSanitizer,
-            IMemoryCache memoryCache,
             IUserInputService userInputService,
             ITokenService tokenService)
         {
@@ -49,7 +47,6 @@ namespace HCM_app.Controllers
             _clientAuth = client.CreateClient("AuthAPI");
             _clientCRUD = client.CreateClient("CRUDAPI");
             _htmlSanitizer = htmlSanitizer;
-            _memoryCache = memoryCache;
             _tokenService=tokenService;
             _htmlSanitizer.AllowedTags.Clear();
         }

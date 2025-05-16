@@ -20,13 +20,11 @@ namespace AuthAPIHCM.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
         private readonly HttpClient _clientCRUD;
-        public AuthController(ApplicationDbContext context, IAuthService authService, ILogger<AuthController> logger)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
-            _context = context;
             _authService = authService;
             _clientCRUD = new HttpClient();
             _clientCRUD.BaseAddress = new Uri("https://localhost:7261/");

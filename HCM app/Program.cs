@@ -37,7 +37,6 @@ namespace HCM_app
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
-            builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IHtmlSanitizer, HtmlSanitizer>();
             builder.Services.AddTransient<IUserInputService, UserInputService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
