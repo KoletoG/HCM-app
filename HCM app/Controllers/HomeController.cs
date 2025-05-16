@@ -36,7 +36,13 @@ namespace HCM_app.Controllers
         private readonly IHtmlSanitizer _htmlSanitizer;
         private readonly IMemoryCache _memoryCache;
         private readonly IUserInputService _userInputService;
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory client, IHtmlSanitizer htmlSanitizer, IMemoryCache memoryCache, IUserInputService userInputService)
+        private readonly ITokenService _tokenService;
+        public HomeController(ILogger<HomeController> logger, 
+            IHttpClientFactory client, 
+            IHtmlSanitizer htmlSanitizer,
+            IMemoryCache memoryCache,
+            IUserInputService userInputService,
+            ITokenService tokenService)
         {
             _userInputService=userInputService;
             _logger = logger;
@@ -44,6 +50,7 @@ namespace HCM_app.Controllers
             _clientCRUD = client.CreateClient("CRUDAPI");
             _htmlSanitizer = htmlSanitizer;
             _memoryCache = memoryCache;
+            _tokenService=tokenService;
             _htmlSanitizer.AllowedTags.Clear();
         }
         public IActionResult Index()
@@ -67,15 +74,13 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                if (secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value != "Manager")
+                var secToken = _tokenService.GetToken(token);
+                if (_tokenService.GetRole(secToken) != "Manager")
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var department = secToken.Claims.First(x => x.Type == "Department").Value;
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var department = _tokenService.GetDepartment(secToken);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount/department-{department}");
                 int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
                 bool isLastPage = false;
@@ -108,14 +113,12 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                if (secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value != "HrAdmin")
+                var secToken = _tokenService.GetToken(token);
+                if (_tokenService.GetRole(secToken) != "HrAdmin")
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var usersCount = await _clientCRUD.GetStringAsync($"api/CRUD/usersCount");
                 int pagesCount = (int)Math.Ceiling((double)int.Parse(usersCount) / Constants.usersPerPage);
                 bool isLastPage = false;
@@ -149,10 +152,8 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                var role = secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+                var secToken = _tokenService.GetToken(token);
+                var role = _tokenService.GetRole(secToken);
                 if (role != "Manager")
                 {
                     return RedirectToAction("Index", "Home");
@@ -167,15 +168,15 @@ namespace HCM_app.Controllers
                 {
                     ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
                 }
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 if (!ModelState.IsValid)
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
                     return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
-                var id = secToken.Claims.First(x => x.Type == "sub").Value;
-                var department = secToken.Claims.First(x => x.Type == "Department").Value;
+                var id = _tokenService.GetId(secToken);
+                var department = _tokenService.GetDepartment(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
                 department = HttpUtility.UrlEncode(department);
                 foreach (var userId in userIdsToDeleteList)
@@ -205,10 +206,8 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                var role = secToken.Claims.First(x => x.Type == ClaimTypes.Role).Value;
+                var secToken = _tokenService.GetToken(token);
+                var role = _tokenService.GetRole(secToken);
                 if (role != "HrAdmin")
                 {
                     return RedirectToAction("Index", "Home");
@@ -223,14 +222,14 @@ namespace HCM_app.Controllers
                 {
                     ModelState.AddModelError("salaryError", "Invalid salary, salary should be higher than 0");
                 }
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 if (!ModelState.IsValid)
                 {
                     var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
                     return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
-                var id = secToken.Claims.First(x => x.Type == "sub").Value;
+                var id = _tokenService.GetId(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
                 foreach (var userId in userIdsToDeleteList)
                 {
@@ -322,11 +321,9 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                var id = secToken.Claims.First(x => x.Type == "sub").Value;
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var secToken = _tokenService.GetToken(token);
+                var id = _tokenService.GetId(secToken);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{id}");
                 var profileViewModel = new ProfileViewModel()
                 {
@@ -369,11 +366,9 @@ namespace HCM_app.Controllers
                 {
                     return RedirectToAction("Login", "Home");
                 }
-                var handler = new JwtSecurityTokenHandler();
-                var tokenString = Encoding.UTF8.GetString(token);
-                var secToken = handler.ReadJwtToken(tokenString);
-                var idFromCurrentUser = secToken.Claims.First(x => x.Type == "sub").Value;
-                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                var secToken = _tokenService.GetToken(token);
+                var idFromCurrentUser = _tokenService.GetId(secToken);
+                _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 var user = await _clientCRUD.GetFromJsonAsync<UserDataModel>($"api/CRUD/users/id-{idFromCurrentUser}");
                 if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash))
                 {

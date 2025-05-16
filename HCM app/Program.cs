@@ -40,6 +40,7 @@ namespace HCM_app
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IHtmlSanitizer, HtmlSanitizer>();
             builder.Services.AddTransient<IUserInputService, UserInputService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddAuthentication()
         .AddJwtBearer(options =>
         {
