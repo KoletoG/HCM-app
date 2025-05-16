@@ -8,10 +8,15 @@
 	}
 }
 <script>
-		function showUser(userId, buttonId)
+		function showUser(userId)
 		{
-		document.getElementById(`model[${userId}]`).hidden = false;
-		document.getElementById(`button[${buttonId}]`).hidden = true;
+		let model = document.getElementById(`model[${userId}]`);
+		if(model.hidden){
+			model.hidden=false;
+		}
+		else{
+			model.hidden=true;
+		}
 	}
 </script>
 <div class="mb-5 container w-25 align-content-center align-items-center align-self-center justify-content-center text-center">
@@ -21,7 +26,7 @@
 		<h6 class="font-monospace">If you want to change user's fields, just type whatever needs to change in the input boxes</h6>
 		@for (int i = 0; i < Model.Users.Count; i++)
 		{
-			<button type="button" id="button[@i]" class=" btn btn-primary mb-3 font-monospace" onclick="showUser(@i,@i)">Show @Model.Users[i].FirstName @Model.Users[i].LastName</button>
+			<button type="button" id="button[@i]" class=" btn btn-primary mb-3 font-monospace" onclick="showUser(@i)">Show @Model.Users[i].FirstName @Model.Users[i].LastName</button>
 			<div hidden id="model[@i]" class="mb-3 border-5">
 				<input type="hidden" class="form-control" value="@Model.Users[i].Id" name="users[@i].Id" />
 				<h5 class="fw-bolder fs-5 font-monospace">First Name: @Model.Users[i].FirstName</h5>
