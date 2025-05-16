@@ -12,24 +12,26 @@
 
 	<form asp-action="UpdateUsersManager1" asp-controller="Home" asp-route-page="@Model.Page" asp-route-isFirstPage="@Model.IsFirstPage" asp-route-isLastPage="@Model.IsLastPage" method="post">
 		@Html.AntiForgeryToken()
+		<h6 class="font-monospace">If you want to change user's fields, just type whatever needs to change in the input boxes</h6>
+
 		@for (int i = 0; i < Model.Users.Count; i++)
 		{
 			<div class="mb-3 border-5">
 				<input type="hidden" value="@Model.Users[i].Id" name="users[@i].Id" />
 				<h5 class="fw-bolder fs-5 font-monospace">First Name: @Model.Users[i].FirstName</h5>
-				<input type="text" class="form-control" value="" name="users[@i].FirstName" />
+				<input type="text" placeholder="First name..." class="form-control" value="" name="users[@i].FirstName" />
 				<h5 class="fw-bolder fs-5 font-monospace">LastName: @Model.Users[i].LastName</h5>
-				<input type="text" class="form-control" value="" name="users[@i].LastName" />
+				<input type="text" placeholder="Last name..." class="form-control" value="" name="users[@i].LastName" />
 				<h5 class="fw-bolder fs-5 font-monospace">Email: @Model.Users[i].Email</h5>
-				<input type="text" class="form-control" value="" name="users[@i].Email" />
+				<input type="text" placeholder="Email..." class="form-control" value="" name="users[@i].Email" />
 				<h5 class="fw-bolder fs-5 font-monospace">Salary: @Model.Users[i].Salary</h5>
-				<input type="number" class="form-control" value="" name="users[@i].Salary" />
+				<input type="number" placeholder="Salary..." class="form-control" value="" name="users[@i].Salary" />
 				<h5 class="fw-bolder fs-5 font-monospace">Department: @Model.Users[i].Department</h5>
-				<input type="text" class="form-control" value="" name="users[@i].Department" />
+				<input type="text" placeholder="Department..." class="form-control" value="" name="users[@i].Department" />
 				<h5 class="fw-bolder fs-5 font-monospace">Job Title: @Model.Users[i].JobTitle</h5>
-				<input type="text" class="form-control" value="" name="users[@i].JobTitle" />
+				<input type="text" placeholder="Job title..." class="form-control" value="" name="users[@i].JobTitle" />
 				<h5 class="fw-bolder fs-5 font-monospace">Role: @Model.Users[i].Role</h5>
-				<input type="text" class="form-control" value="" name="users[@i].Role" />
+				<input type="text" class="form-control" placeholder="Role..." value="" name="users[@i].Role" />
 				<h5 class="fw-bolder fs-5 font-monospace">Delete user? :</h5>
 				<input name="users[@i].ShouldDelete" type="checkbox" class="form-check-input" value="true" />
 				<br />
