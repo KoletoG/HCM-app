@@ -8,6 +8,6 @@ namespace SharedModels
 {
     public class Constants
     {
-        public readonly static int usersPerPage = 4; // Sets how many users should be shown every page
+        public readonly static int usersPerPage = 3; // Sets how many users should be shown every page
     }
 }

@@ -57,7 +57,7 @@
 	{
 		int pageNext = Model.Page + 1;
 		<a asp-action="UpdateUsersManager" class="btn btn-primary" asp-controller="Home" asp-route-page="@pageNext" method="get">
-			&raquo; Next page
+			Next page &raquo;
 		</a>
 	}
 	else if (Model.IsLastPage)
@@ -78,7 +78,7 @@
 				</a>
 				int pageNext = Model.Page + 1;
 				<a asp-action="UpdateUsersManager" class="btn btn-primary" asp-controller="Home" asp-route-page="@pageNext" method="get">
-					&raquo; Next page
+					Next page &raquo;
 				</a>
 			}
 		</div>
