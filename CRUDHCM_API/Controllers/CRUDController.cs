@@ -234,7 +234,10 @@ namespace CRUDHCM_API.Controllers
                         }
                         if (!string.IsNullOrEmpty(user.Role))
                         {
-                            userFromDB.Role = user.Role;
+                            if (user.Role != "HrAdmin") // Managers cannot change other user's role to HrAdmin
+                            {
+                                userFromDB.Role = user.Role;
+                            }
                         }
                     }
                 }
