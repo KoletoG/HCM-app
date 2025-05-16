@@ -113,6 +113,12 @@ namespace HCM_app.Controllers
                 page = 1;
                 isFirstPage = true;
             }
+            if (pagesCount == 1)
+            {
+                isLastPage=true;
+                isFirstPage=true;
+                return;
+            }
         }
         // Loads the users in the admin panel
         [HttpGet("adminPanelUpdate/page-{page}")]
