@@ -172,9 +172,9 @@ namespace HCM_app.Controllers
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 if (!ModelState.IsValid)
                 {
-                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
+                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
+                    return View("UpdateUsersManager", new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
                 var id = _tokenService.GetId(secToken);
                 var department = _tokenService.GetDepartment(secToken);
@@ -226,9 +226,9 @@ namespace HCM_app.Controllers
                 _clientCRUD.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Encoding.UTF8.GetString(token));
                 if (!ModelState.IsValid)
                 {
-                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users");
+                    var usersForOutput = await _clientCRUD.GetFromJsonAsync<List<UserDataModel>>($"api/CRUD/users/page-{page}");
                     List<string> errors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
-                    return View(new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
+                    return View("UpdateUsersAdmin", new UsersToUpdateViewModel(usersForOutput, errors, isLastPage, isFirstPage, page));
                 }
                 var id = _tokenService.GetId(secToken);
                 var userIdsToDeleteList = users.Where(x => x.ShouldDelete).Select(x => x.Id).ToList();
