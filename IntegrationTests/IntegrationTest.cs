@@ -28,19 +28,15 @@ public class AuthCrudFlowTests
             {
                 builder.UseEnvironment("Testing");
             });
-        _authClient = _factory.CreateClient(); // ✅ No BaseAddress – uses in-memory test server
+        _authClient = _factory.CreateClient();
         _crudClient = new HttpClient
         {
-            BaseAddress = new Uri("https://localhost:7261/") // External CRUD service still fine
+            BaseAddress = new Uri("https://localhost:7261/")
         };
     }
-
-    [Fact]
-    public async Task ExampleTest()
-    {
-        var response = await _authClient.GetAsync("/api/auth/login");
-        Assert.NotNull(response);
-    }
+    /// <summary>
+    /// Tests if authAPI works
+    /// </summary>
     [Fact]
     public async Task SanityCheck_AuthApiResponds()
     {
@@ -54,6 +50,10 @@ public class AuthCrudFlowTests
 
         Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
     }
+    /// <summary>
+    /// Integration test for AuthAPI and CRUDAPI
+    /// </summary>
+    /// <returns>Success if everything went right</returns>
     [Fact]
     public async Task RegisterLoginCrudFlow_Succeeds()
     {

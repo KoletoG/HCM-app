@@ -51,7 +51,9 @@ namespace xUnitTests
                 _mockSanitizer.Object,
                 _mockCache.Object);
         }
-
+        /// <summary>
+        /// Tests Index
+        /// </summary>
         [Fact]
         public void Index_Returns_View()
         {
@@ -59,18 +61,27 @@ namespace xUnitTests
             var viewResult = Assert.IsType<ViewResult>(result);
             viewResult.ViewName.Should().BeNull();
         }
+        /// <summary>
+        /// Tests Login
+        /// </summary>
         [Fact]
         public void Login_GETReturns_ReturnsView()
         {
             var result = _controller.Login();
             result.Should().BeOfType<ViewResult>();
         }
+        /// <summary>
+        /// Tests Register
+        /// </summary>
         [Fact]
         public void Register_GET_ReturnsView()
         {
             var result = _controller.Register();
             result.Should().BeOfType<ViewResult>();
         }
+        /// <summary>
+        /// Tests Error
+        /// </summary>
         [Fact]
         public void Error_ReturnsErrorView()
         {
@@ -83,6 +94,9 @@ namespace xUnitTests
             view.Should().NotBeNull();
             view.Model.Should().BeOfType<ErrorViewModel>();
         }
+        /// <summary>
+        /// Tests Register
+        /// </summary>
         [Fact]
         public async Task Register_POST_InvalidModel_ReturnsViewWithModel()
         {
@@ -111,6 +125,9 @@ namespace xUnitTests
             return Encoding.UTF8.GetBytes(tokenString);
         }
 
+        /// <summary>
+        /// Tests UpdateUsersManager
+        /// </summary>
         [Fact]
         public async Task UpdateUsersManager_NoTokenInSession_RedirectsToLogin()
         {
@@ -131,6 +148,9 @@ namespace xUnitTests
             Assert.Equal("Home", redirect.ControllerName);
         }
 
+        /// <summary>
+        /// Tests UpdateUsersManager
+        /// </summary>
         [Fact]
         public async Task UpdateUsersManager_NonManagerRole_RedirectsToLogin()
         {
@@ -146,9 +166,12 @@ namespace xUnitTests
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Login", redirect.ActionName);
         }
-       
 
 
+
+        /// <summary>
+        /// Tests UpdateUsersAdmin
+        /// </summary>
         [Fact]
         public async Task UpdateUsersAdmin_InvalidRole_RedirectsToLogin()
         {
@@ -164,6 +187,9 @@ namespace xUnitTests
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Login", redirect.ActionName);
         }
+        /// <summary>
+        /// Tests UpdateUsersAdmin
+        /// </summary>
         [Fact]
         public async Task UpdateUsersAdmin_ThrowsException_ReturnsErrorView()
         {
@@ -179,6 +205,9 @@ namespace xUnitTests
             Assert.Equal("Error", view.ViewName);
         }
 
+        /// <summary>
+        /// Tests Login
+        /// </summary>
         [Theory]
         [InlineData("user@example.com", "password123")]
         public async Task Login_POST_ValidCredentials_ReturnsRedirect(string email, string password)
@@ -212,6 +241,9 @@ namespace xUnitTests
             Assert.Equal("Profile", redirect.ActionName);
             sessionMock.Verify();
         }
+        /// <summary>
+        /// Tests Login
+        /// </summary>
         [Theory]
         [InlineData("userexample", "password123")]
         public async Task Login_POST_InvalidCredentials_ReturnsRedirect(string email, string password)

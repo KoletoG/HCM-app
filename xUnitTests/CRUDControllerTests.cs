@@ -29,6 +29,9 @@ namespace xUnitTests
             var logger = new Mock<ILogger<CRUDController>>();
             return new CRUDController(context, logger.Object);
         }
+        /// <summary>
+        /// Tests AddUser
+        /// </summary>
         [Fact]
         public async Task AddUser_ValidData_ReturnsCreatedResult()
         {
@@ -55,6 +58,9 @@ namespace xUnitTests
             Assert.Equal("Test", returnedUser.FirstName);
         }
 
+        /// <summary>
+        /// Tests AddUser
+        /// </summary>
         [Fact]
         public async Task AddUser_MissingRequiredField_ReturnsBadRequest()
         {
@@ -75,6 +81,9 @@ namespace xUnitTests
             // you need to simulate model validation if needed.
             Assert.IsType<BadRequestObjectResult>(result);
         }
+        /// <summary>
+        /// Tests UpdatePassword
+        /// </summary>
         [Fact]
         public async Task UpdatePassword_ChangesPasswordHash()
         {

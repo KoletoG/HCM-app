@@ -51,7 +51,9 @@ namespace AuthAPIHCM.Tests
             return controller;
         }
 
-
+        /// <summary>
+        /// Testing For Login method
+        /// </summary>
         [Fact]
         public async Task Login_ValidCredentials_ReturnsOkWithToken()
         {
@@ -79,6 +81,9 @@ namespace AuthAPIHCM.Tests
             Assert.Equal("fake-token", okResult.Value);
         }
 
+        /// <summary>
+        /// Testing For Login method
+        /// </summary>
         [Fact]
         public async Task Login_InvalidPassword_ReturnsUnauthorized()
         {
@@ -104,6 +109,9 @@ namespace AuthAPIHCM.Tests
             Assert.Equal("Invalid credentials", unauthorized.Value);
         }
 
+        /// <summary>
+        /// Testing For Login method
+        /// </summary>
         [Fact]
         public async Task Login_UserNotFound_ReturnsNotFound()
         {
@@ -124,6 +132,9 @@ namespace AuthAPIHCM.Tests
             Assert.Equal("A user with this email doesn't exist.", notFound.Value);
         }
 
+        /// <summary>
+        /// Testing For Register method
+        /// </summary>
         [Fact]
         public async Task Register_ValidUser_ReturnsNoContent()
         {
@@ -148,6 +159,9 @@ namespace AuthAPIHCM.Tests
             Assert.IsType<NoContentResult>(result);
         }
 
+        /// <summary>
+        /// Testing For Register method
+        /// </summary>
         [Fact]
         public async Task Register_InvalidModel_ReturnsBadRequest()
         {
