@@ -7,13 +7,12 @@ namespace HCM_app.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly JwtSecurityTokenHandler _handler;
-        public TokenService(JwtSecurityTokenHandler handler) 
+        public TokenService() 
         {
-            _handler = handler;
         }
         public JwtSecurityToken GetToken(byte[] tokenBytes)
         {
+            var _handler = new JwtSecurityTokenHandler();
             var tokenString = Encoding.UTF8.GetString(tokenBytes);
             return _handler.ReadJwtToken(tokenString);
         }
